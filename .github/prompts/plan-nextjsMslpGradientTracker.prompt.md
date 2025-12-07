@@ -26,5 +26,6 @@ A React/Next.js web application that displays Mean Sea Level Pressure (MSLP) dif
 
 ## Future Enhancements
 
-1. Edit location details (name, coordinates) in UI.
-2. Select home location from list.
+1. Edit location details (name, coordinates) in Settings UI.
+2. Select home location from list in Settings UI.
+3. Enable setting to control which locations appear on dashboard.
