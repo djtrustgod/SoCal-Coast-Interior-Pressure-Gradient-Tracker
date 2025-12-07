@@ -23,3 +23,8 @@ A React/Next.js web application that displays Mean Sea Level Pressure (MSLP) dif
 2. **Data refresh strategy** - Manual refresh button or auto-refresh every 5 minutes.  Auto-refresh value should be configurable.
 
 3. **Historical data scope** - Display only current readings.  No historical data functionality needed.
+
+## Future Enhancements
+
+1. Edit location details (name, coordinates) in UI.
+2. Select home location from list.
