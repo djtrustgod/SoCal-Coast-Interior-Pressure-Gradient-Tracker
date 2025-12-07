@@ -11,7 +11,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, MapPin, Pencil, Home, Eye, EyeOff } from "lucide-react";
+import { Plus, Trash2, MapPin, Pencil, Home, Eye, EyeOff, Bug, RefreshCw } from "lucide-react";
 import { EditLocationDialog } from "@/components/edit-location-dialog";
 
 export default function LocationsPage() {
@@ -21,6 +21,9 @@ export default function LocationsPage() {
   const [loading, setLoading] = useState(true);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
+  const [debugData, setDebugData] = useState<any>(null);
+  const [debugLoading, setDebugLoading] = useState(false);
 
   useEffect(() => {
     fetchLocations();
@@ -155,6 +158,22 @@ export default function LocationsPage() {
     } catch (error) {
       console.error("Error updating dashboard locations:", error);
       alert("Failed to update dashboard locations");
+    }
+  };
+
+  const fetchDebugData = async () => {
+    setDebugLoading(true);
+    try {
+      const locationIds = locations.map(loc => loc.id).join(',');
+      const response = await fetch(`/api/pressure?ids=${locationIds}`);
+      const data = await response.json();
+      setDebugData(data);
+      setShowDebug(true);
+    } catch (error) {
+      console.error("Error fetching debug data:", error);
+      alert("Failed to fetch API data");
+    } finally {
+      setDebugLoading(false);
     }
   };
 
@@ -403,6 +422,82 @@ export default function LocationsPage() {
               provide the required details including coordinates.
             </p>
           </CardContent>
+        </Card>
+
+        <Card className="mt-6">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Bug className="h-5 w-5" />
+                  Debug: API Raw Output
+                </CardTitle>
+                <CardDescription>
+                  View raw MSLP data from Open-Meteo API for all locations
+                </CardDescription>
+              </div>
+              <Button
+                onClick={fetchDebugData}
+                disabled={debugLoading}
+                variant="outline"
+              >
+                <RefreshCw className={`mr-2 h-4 w-4 ${debugLoading ? "animate-spin" : ""}`} />
+                {showDebug ? "Refresh" : "Load"} API Data
+              </Button>
+            </div>
+          </CardHeader>
+          {showDebug && debugData && (
+            <CardContent>
+              <div className="bg-muted p-4 rounded-lg overflow-auto max-h-[600px]">
+                <pre className="text-xs font-mono">
+                  {JSON.stringify(debugData, null, 2)}
+                </pre>
+              </div>
+              {debugData.readings && (
+                <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {debugData.readings.map((reading: any) => {
+                    const location = locations.find(l => l.id === reading.locationId);
+                    return (
+                      <Card key={reading.locationId}>
+                        <CardHeader className="pb-3">
+                          <CardTitle className="text-sm">
+                            {location?.name || reading.locationId}
+                          </CardTitle>
+                          <CardDescription className="text-xs">
+                            {location?.code}
+                          </CardDescription>
+                        </CardHeader>
+                        <CardContent className="text-xs space-y-1">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Pressure:</span>
+                            <span className="font-medium">{reading.pressure.toFixed(1)} hPa</span>
+                          </div>
+                          {reading.temperature !== undefined && (
+                            <div className="flex justify-between">
+                              <span className="text-muted-foreground">Temperature:</span>
+                              <span className="font-medium">{reading.temperature.toFixed(1)}°C</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">Timestamp:</span>
+                            <span className="font-medium text-xs">
+                              {new Date(reading.timestamp).toLocaleString(undefined, {
+                                month: 'short',
+                                day: 'numeric',
+                                hour: 'numeric',
+                                minute: '2-digit',
+                                timeZoneName: 'short'
+                              })}
+                            </span>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              )}
+            </CardContent>
+          )}
         </Card>
       </main>
     </div>
