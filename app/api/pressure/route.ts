@@ -3,6 +3,8 @@ import { fetchMSLPForLocations } from "@/lib/api/open-meteo";
 import locationsData from "@/data/locations.json";
 import { Location } from "@/types/location";
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;

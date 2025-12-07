@@ -235,12 +235,11 @@ Either use the UI or manually edit `data/locations.json`:
 
 ## Building for Production
 
-\`\`\`bash
 npm run build
-npm run start
-\`\`\`
 
-The app runs on `http://localhost:3000` by default.
+npm run start
+
+The NextJS app runs on `http://localhost:3000` by default.
 
 ## Contributing
 
