@@ -23,6 +23,13 @@ Update the following sections as applicable:
 - **Known Issues/Limitations**: Document any new limitations or issues
 - **Project Status**: Update metrics (lines of code, last updated date)
 
+### 3. CHANGELOG.md
+Update with each build or significant change:
+- **[Unreleased] section**: Add changes under appropriate categories (Added, Changed, Fixed, etc.)
+- Move items from [Unreleased] to a new version section when releasing
+- Include the date in YYYY-MM-DD format for version releases
+- Follow Keep a Changelog format with clear, concise descriptions
+
 ## When to Update Documentation
 
 Update documentation for:
@@ -57,6 +64,14 @@ Do NOT update documentation for:
 - Keep metrics accurate (lines of code, dependencies count)
 - Update "Last Updated" date to current date
 
+### CHANGELOG.md Standards
+- Follow Keep a Changelog format (Added, Changed, Deprecated, Removed, Fixed, Security)
+- Use present tense for descriptions ("Add feature" not "Added feature")
+- Group related changes together
+- Be specific and concise
+- Add entries to [Unreleased] section during development
+- Create dated version sections only when releasing
+
 ## Workflow
 
 When implementing a feature:
@@ -64,9 +79,10 @@ When implementing a feature:
 2. **Test the functionality** to ensure it works
 3. **Update README.md** with user-facing documentation
 4. **Update IMPLEMENTATION.md** with technical details
-5. **Verify documentation accuracy** by reading through changes
-6. **Update version number** in `package.json` if the change is significant (new features, breaking changes, or major bug fixes)
-7. **Commit all changes together** (code + documentation)
+5. **Update CHANGELOG.md** by adding changes to the [Unreleased] section
+6. **Verify documentation accuracy** by reading through changes
+7. **Update version number** in `package.json` if the change is significant (new features, breaking changes, or major bug fixes)
+8. **Commit all changes together** (code + documentation + changelog)
 
 ## Example Documentation Updates
 
@@ -113,6 +129,6 @@ Update home location or dashboard location selections.
 
 ## Reminder
 
-🚨 **NEVER mark a task as complete without updating both README.md and IMPLEMENTATION.md!**
+🚨 **NEVER mark a task as complete without updating README.md, IMPLEMENTATION.md, and CHANGELOG.md!**
 
 This ensures the documentation always reflects the current state of the application and helps other developers (and users) understand all available features.
