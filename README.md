@@ -7,14 +7,18 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 - 🌡️ **Real-time MSLP Data**: Fetches current pressure data from Open-Meteo API
 - 📊 **Pressure Gradient Visualization**: Displays pressure differences between home location and up to 3 comparison locations
 - 🎨 **Modern UI**: Clean, responsive design with light/dark theme support
-- 📍 **25 Pre-configured Locations**: Includes major coastal and interior SoCal locations
+- 📍 **24 Pre-configured Locations**: Includes major coastal and interior SoCal locations
 - ⚙️ **Location Management**: Add, edit, and delete locations (max 25)
+- 🏠 **Set Home Location**: Choose any location as your home base from the Settings UI
+- 👁️ **Dashboard Customization**: Select up to 3 locations to display on the dashboard
+- 🔄 **Manual Refresh**: On-demand refresh button to fetch the latest pressure data
+- 🕐 **Timezone-Aware Timestamps**: All timestamps automatically converted to your local timezone
 - 💾 **Persistent Storage**: JSON-based data storage for location configurations
-- 🔄 **Auto-refresh**: Data cached with 1-hour revalidation
+- ⏱️ **Smart Data Updates**: Data cached with 1-hour revalidation, shows current hour readings
 
 ## Technology Stack
 
-- **Framework**: Next.js 14+ (App Router)
+- **Framework**: Next.js 16.0.7 (Turbopack, App Router)
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui (Radix UI primitives)
@@ -54,10 +58,12 @@ npm run dev
 ### Dashboard
 
 The main dashboard displays:
-- Current MSLP for the home location (Santa Ana by default)
-- Pressure gradients for up to 3 comparison locations
+- Current MSLP for the home location (customizable)
+- Pressure gradients for up to 3 comparison locations (customizable)
 - Color-coded interpretations (offshore flow, onshore flow, neutral)
-- Last update timestamp
+- Last update timestamps in your local timezone (e.g., "Dec 6, 2025, 8:00 PM PST")
+- Manual refresh button to fetch the latest data on-demand
+- Automatic data updates with 1-hour cache revalidation
 
 ### Interpreting Gradients
 
@@ -69,26 +75,32 @@ The main dashboard displays:
 
 Navigate to the Settings (gear icon) to:
 - View all configured locations (coastal vs. interior)
+- **Set Home Location**: Click the home icon next to any location to set it as your home base
+- **Select Dashboard Locations**: Click the eye icon to add/remove locations from dashboard display (max 3)
 - Add new locations (up to 25 total)
-- Delete locations (except home location)
-- See location details (coordinates, elevation, type)
+- Edit existing locations (name, code, coordinates, type, elevation)
+- Delete locations (locations in use as home cannot be deleted)
+- See location details with visual badges (HOME, DASHBOARD)
+- Location counter shows current usage (e.g., "24 of 25 locations configured")
 
 ## Project Structure
 
 \`\`\`
 ├── app/
 │   ├── layout.tsx           # Root layout with theme provider
-│   ├── page.tsx             # Main dashboard
+│   ├── page.tsx             # Main dashboard (server component)
 │   ├── locations/
 │   │   └── page.tsx         # Location management page
 │   └── api/
 │       ├── pressure/        # Pressure data API endpoint
-│       └── locations/       # Location CRUD API endpoint
+│       └── locations/       # Location CRUD API endpoint (GET/POST/PATCH/PUT/DELETE)
 ├── components/
-│   ├── ui/                  # shadcn/ui components
-│   ├── gradient-card.tsx    # Pressure gradient display card
+│   ├── ui/                  # shadcn/ui components (Button, Card, Dialog, Select)
+│   ├── dashboard-content.tsx # Client component with refresh functionality
+│   ├── gradient-card.tsx    # Pressure gradient display card with timestamps
+│   ├── edit-location-dialog.tsx # Dialog for editing location details
 │   ├── header.tsx           # App header with navigation
-│   ├── location-selector.tsx # Location comparison selector
+│   ├── location-selector.tsx # Location comparison selector (unused)
 │   ├── theme-provider.tsx   # Theme context provider
 │   └── theme-toggle.tsx     # Light/dark mode toggle
 ├── lib/
@@ -118,7 +130,16 @@ GET /api/pressure?ids=sna,sba,dag
 \`\`\`
 
 ### GET /api/locations
-Get all configured locations.
+Get all configured locations, home location ID, and dashboard location IDs.
+
+**Response:**
+\`\`\`json
+{
+  "homeLocationId": "sna",
+  "dashboardLocationIds": ["sba", "smx", "dag"],
+  "locations": [...]
+}
+\`\`\`
 
 ### POST /api/locations
 Add a new location.
@@ -136,17 +157,58 @@ Add a new location.
 }
 \`\`\`
 
+### PATCH /api/locations
+Update home location or dashboard location selections.
+
+**Body (Set Home):**
+\`\`\`json
+{
+  "homeLocationId": "sba"
+}
+\`\`\`
+
+**Body (Set Dashboard Locations):**
+\`\`\`json
+{
+  "dashboardLocationIds": ["sba", "smx", "dag"]
+}
+\`\`\`
+
+### PUT /api/locations
+Update an existing location's details.
+
+**Body:**
+\`\`\`json
+{
+  "id": "location-id",
+  "name": "Updated Name",
+  "code": "CODE",
+  "latitude": 34.0,
+  "longitude": -118.0,
+  "type": "coast",
+  "elevation": 100
+}
+\`\`\`
+
 ### DELETE /api/locations?id=location-id
-Delete a location (cannot delete home location).
+Delete a location (cannot delete home location or locations in dashboard).
 
 ## Configuration
 
 ### Changing the Home Location
 
+**Via UI (Recommended):**
+1. Navigate to Settings (gear icon)
+2. Find the location you want to set as home
+3. Click the home icon next to that location
+4. Confirm in the dialog
+
+**Manual Edit:**
 Edit `data/locations.json`:
 \`\`\`json
 {
   "homeLocationId": "sna",  // Change to any location ID
+  "dashboardLocationIds": ["sba", "smx", "dag"],  // Up to 3 location IDs
   "locations": [...]
 }
 \`\`\`

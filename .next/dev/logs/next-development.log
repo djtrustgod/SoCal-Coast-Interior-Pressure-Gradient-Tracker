@@ -1,11 +1,73 @@
-[00:00:30.086] Server  LOG      ✓ Ready in 18.5s
-[00:00:36.572] Server  LOG      ○ Compiling / ...
-[00:00:58.779] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
-[00:00:59.692] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
-[00:00:59.692] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
-[00:00:59.692] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
-[00:00:59.692] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
-[00:00:59.692] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
-[00:00:59.692] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
-[00:00:59.692] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
-[00:00:59.692] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:00.795] Server  LOG      ✓ Ready in 519ms
+[00:00:02.843] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:03.546] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
+[00:00:03.546] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:03.546] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:03.546] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:03.546] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:03.546] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
+[00:00:03.546] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
+[00:00:03.546] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:23.462] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:23.598] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
+[00:00:23.598] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:23.598] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:23.598] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:23.598] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:23.598] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
+[00:00:23.598] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
+[00:00:23.598] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:25.955] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:26.092] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
+[00:00:26.092] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:26.092] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:26.092] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:26.092] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:26.092] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
+[00:00:26.092] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
+[00:00:26.092] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:26.890] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:27.026] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
+[00:00:27.026] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:27.026] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:27.026] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:27.026] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:27.026] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
+[00:00:27.026] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
+[00:00:27.026] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:30.928] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:31.050] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
+[00:00:31.050] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:31.050] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:31.050] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:31.050] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:31.050] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
+[00:00:31.050] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
+[00:00:31.050] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:31.790] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:31.920] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
+[00:00:31.920] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:31.920] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:31.920] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:31.920] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:31.920] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
+[00:00:31.920] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
+[00:00:31.920] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:32.465] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:32.589] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
+[00:00:32.589] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:32.589] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:32.589] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:32.589] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:32.589] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
+[00:00:32.589] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
+[00:00:32.589] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:33.333] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:33.458] Browser LOG     [PageWorldMain] driverVersion: 25.2.124.372-preview | window.location.href: http://localhost:3000/
+[00:00:33.458] Browser LOG     [SapFiori_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:33.459] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:33.459] Browser LOG     [SapFioriAppLoadedHandler::IsSupported] Viewport could not be found. App loaded event handler not supported
+[00:00:33.459] Browser LOG     [SalesForce_PageWorld] driverVersion: 25.2.124.372-preview
+[00:00:33.459] Browser LOG     [UiPath][SapWebGui_PageWorld] : initialize driverVersion:  25.2.124.372-preview
+[00:00:33.459] Browser LOG     [UiPath][SapAriba_PageWorld] initialize driverVersion: 25.2.124.372-preview
+[00:00:33.459] Browser LOG     [Driver_PageWorld] driverVersion: 25.2.124.372-preview

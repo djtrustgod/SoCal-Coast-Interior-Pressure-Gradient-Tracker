@@ -33,6 +33,7 @@ export async function GET() {
       success: true,
       locations: data.locations,
       homeLocationId: data.homeLocationId,
+      dashboardLocationIds: data.dashboardLocationIds || [],
     });
   } catch (error) {
     console.error("Error reading locations:", error);
@@ -129,6 +130,81 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+// PATCH - Update home location or dashboard locations
+export async function PATCH(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const { homeLocationId, dashboardLocationIds } = body;
+
+    const data = await readLocationsFile();
+
+    if (homeLocationId !== undefined) {
+      if (typeof homeLocationId !== "string") {
+        return NextResponse.json(
+          { error: "homeLocationId must be a string" },
+          { status: 400 }
+        );
+      }
+
+      const locationExists = data.locations.some(
+        (loc: Location) => loc.id === homeLocationId
+      );
+
+      if (!locationExists) {
+        return NextResponse.json(
+          { error: "Location not found" },
+          { status: 404 }
+        );
+      }
+
+      data.homeLocationId = homeLocationId;
+    }
+
+    if (dashboardLocationIds !== undefined) {
+      if (!Array.isArray(dashboardLocationIds)) {
+        return NextResponse.json(
+          { error: "dashboardLocationIds must be an array" },
+          { status: 400 }
+        );
+      }
+
+      if (dashboardLocationIds.length > 3) {
+        return NextResponse.json(
+          { error: "Maximum 3 dashboard locations allowed" },
+          { status: 400 }
+        );
+      }
+
+      const invalidIds = dashboardLocationIds.filter(
+        (id: string) => !data.locations.some((loc: Location) => loc.id === id)
+      );
+
+      if (invalidIds.length > 0) {
+        return NextResponse.json(
+          { error: `Invalid location IDs: ${invalidIds.join(", ")}` },
+          { status: 400 }
+        );
+      }
+
+      data.dashboardLocationIds = dashboardLocationIds;
+    }
+
+    await writeLocationsFile(data);
+
+    return NextResponse.json({
+      success: true,
+      homeLocationId: data.homeLocationId,
+      dashboardLocationIds: data.dashboardLocationIds,
+    });
+  } catch (error) {
+    console.error("Error updating settings:", error);
+    return NextResponse.json(
+      { error: "Failed to update settings" },
+      { status: 500 }
+    );
+  }
+}
+
 // DELETE - Remove a location
 export async function DELETE(request: NextRequest) {
   try {
@@ -161,6 +237,13 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json(
         { error: "Location not found" },
         { status: 404 }
+      );
+    }
+
+    // Remove from dashboard locations if present
+    if (data.dashboardLocationIds && Array.isArray(data.dashboardLocationIds)) {
+      data.dashboardLocationIds = data.dashboardLocationIds.filter(
+        (id: string) => id !== locationId
       );
     }
 

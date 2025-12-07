@@ -61,6 +61,8 @@ __turbopack_context__.s([
     ()=>DELETE,
     "GET",
     ()=>GET,
+    "PATCH",
+    ()=>PATCH,
     "POST",
     ()=>POST,
     "PUT",
@@ -100,7 +102,8 @@ async function GET() {
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: true,
             locations: data.locations,
-            homeLocationId: data.homeLocationId
+            homeLocationId: data.homeLocationId,
+            dashboardLocationIds: data.dashboardLocationIds || []
         });
     } catch (error) {
         console.error("Error reading locations:", error);
@@ -191,6 +194,69 @@ async function PUT(request) {
         });
     }
 }
+async function PATCH(request) {
+    try {
+        const body = await request.json();
+        const { homeLocationId, dashboardLocationIds } = body;
+        const data = await readLocationsFile();
+        if (homeLocationId !== undefined) {
+            if (typeof homeLocationId !== "string") {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    error: "homeLocationId must be a string"
+                }, {
+                    status: 400
+                });
+            }
+            const locationExists = data.locations.some((loc)=>loc.id === homeLocationId);
+            if (!locationExists) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    error: "Location not found"
+                }, {
+                    status: 404
+                });
+            }
+            data.homeLocationId = homeLocationId;
+        }
+        if (dashboardLocationIds !== undefined) {
+            if (!Array.isArray(dashboardLocationIds)) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    error: "dashboardLocationIds must be an array"
+                }, {
+                    status: 400
+                });
+            }
+            if (dashboardLocationIds.length > 3) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    error: "Maximum 3 dashboard locations allowed"
+                }, {
+                    status: 400
+                });
+            }
+            const invalidIds = dashboardLocationIds.filter((id)=>!data.locations.some((loc)=>loc.id === id));
+            if (invalidIds.length > 0) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    error: `Invalid location IDs: ${invalidIds.join(", ")}`
+                }, {
+                    status: 400
+                });
+            }
+            data.dashboardLocationIds = dashboardLocationIds;
+        }
+        await writeLocationsFile(data);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            success: true,
+            homeLocationId: data.homeLocationId,
+            dashboardLocationIds: data.dashboardLocationIds
+        });
+    } catch (error) {
+        console.error("Error updating settings:", error);
+        return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+            error: "Failed to update settings"
+        }, {
+            status: 500
+        });
+    }
+}
 async function DELETE(request) {
     try {
         const searchParams = request.nextUrl.searchParams;
@@ -219,6 +285,10 @@ async function DELETE(request) {
             }, {
                 status: 404
             });
+        }
+        // Remove from dashboard locations if present
+        if (data.dashboardLocationIds && Array.isArray(data.dashboardLocationIds)) {
+            data.dashboardLocationIds = data.dashboardLocationIds.filter((id)=>id !== locationId);
         }
         await writeLocationsFile(data);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({

@@ -11,12 +11,16 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, MapPin } from "lucide-react";
+import { Plus, Trash2, MapPin, Pencil, Home, Eye, EyeOff } from "lucide-react";
+import { EditLocationDialog } from "@/components/edit-location-dialog";
 
 export default function LocationsPage() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [homeLocationId, setHomeLocationId] = useState<string>("");
+  const [dashboardLocationIds, setDashboardLocationIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingLocation, setEditingLocation] = useState<Location | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   useEffect(() => {
     fetchLocations();
@@ -29,11 +33,39 @@ export default function LocationsPage() {
       if (data.success) {
         setLocations(data.locations);
         setHomeLocationId(data.homeLocationId);
+        setDashboardLocationIds(data.dashboardLocationIds || []);
       }
     } catch (error) {
       console.error("Error fetching locations:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleEdit = (location: Location) => {
+    setEditingLocation(location);
+    setIsEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = async (updatedLocation: Location) => {
+    try {
+      const response = await fetch("/api/locations", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedLocation),
+      });
+
+      if (response.ok) {
+        await fetchLocations();
+      } else {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to update location");
+      }
+    } catch (error) {
+      console.error("Error updating location:", error);
+      throw error;
     }
   };
 
@@ -61,6 +93,68 @@ export default function LocationsPage() {
     } catch (error) {
       console.error("Error deleting location:", error);
       alert("Failed to delete location");
+    }
+  };
+
+  const handleSetHome = async (locationId: string) => {
+    const location = locations.find((loc) => loc.id === locationId);
+    if (!location) return;
+
+    if (!confirm(`Set ${location.name} as your home location?`)) {
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/locations", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ homeLocationId: locationId }),
+      });
+
+      if (response.ok) {
+        await fetchLocations();
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Error setting home location:", error);
+      alert("Failed to set home location");
+    }
+  };
+
+  const handleToggleDashboard = async (locationId: string) => {
+    const newDashboardIds = dashboardLocationIds.includes(locationId)
+      ? dashboardLocationIds.filter(id => id !== locationId)
+      : dashboardLocationIds.length < 3
+      ? [...dashboardLocationIds, locationId]
+      : dashboardLocationIds;
+
+    if (newDashboardIds.length === dashboardLocationIds.length && !dashboardLocationIds.includes(locationId)) {
+      alert("Maximum 3 locations can be displayed on dashboard");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/locations", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ dashboardLocationIds: newDashboardIds }),
+      });
+
+      if (response.ok) {
+        await fetchLocations();
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Error updating dashboard locations:", error);
+      alert("Failed to update dashboard locations");
     }
   };
 
@@ -121,6 +215,11 @@ export default function LocationsPage() {
                             HOME
                           </span>
                         )}
+                        {dashboardLocationIds.includes(location.id) && (
+                          <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded">
+                            DASHBOARD
+                          </span>
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         {location.code} • {location.latitude.toFixed(4)}°N,{" "}
@@ -132,15 +231,48 @@ export default function LocationsPage() {
                         </div>
                       )}
                     </div>
-                    {location.id !== homeLocationId && (
+                    <div className="flex items-center gap-1">
+                      {location.id !== homeLocationId && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleSetHome(location.id)}
+                            title="Set as Home"
+                          >
+                            <Home className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleToggleDashboard(location.id)}
+                            title={dashboardLocationIds.includes(location.id) ? "Remove from Dashboard" : "Add to Dashboard"}
+                          >
+                            {dashboardLocationIds.includes(location.id) ? (
+                              <Eye className="h-4 w-4 text-primary" />
+                            ) : (
+                              <EyeOff className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(location.id)}
+                        onClick={() => handleEdit(location)}
                       >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <Pencil className="h-4 w-4" />
                       </Button>
-                    )}
+                      {location.id !== homeLocationId && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(location.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
@@ -172,6 +304,11 @@ export default function LocationsPage() {
                             HOME
                           </span>
                         )}
+                        {dashboardLocationIds.includes(location.id) && (
+                          <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded">
+                            DASHBOARD
+                          </span>
+                        )}
                       </div>
                       <div className="text-sm text-muted-foreground">
                         {location.code} • {location.latitude.toFixed(4)}°N,{" "}
@@ -183,21 +320,61 @@ export default function LocationsPage() {
                         </div>
                       )}
                     </div>
-                    {location.id !== homeLocationId && (
+                    <div className="flex items-center gap-1">
+                      {location.id !== homeLocationId && (
+                        <>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleSetHome(location.id)}
+                            title="Set as Home"
+                          >
+                            <Home className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleToggleDashboard(location.id)}
+                            title={dashboardLocationIds.includes(location.id) ? "Remove from Dashboard" : "Add to Dashboard"}
+                          >
+                            {dashboardLocationIds.includes(location.id) ? (
+                              <Eye className="h-4 w-4 text-primary" />
+                            ) : (
+                              <EyeOff className="h-4 w-4" />
+                            )}
+                          </Button>
+                        </>
+                      )}
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDelete(location.id)}
+                        onClick={() => handleEdit(location)}
                       >
-                        <Trash2 className="h-4 w-4 text-destructive" />
+                        <Pencil className="h-4 w-4" />
                       </Button>
-                    )}
+                      {location.id !== homeLocationId && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleDelete(location.id)}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
         </div>
+
+        <EditLocationDialog
+          location={editingLocation}
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          onSave={handleSaveEdit}
+        />
 
         <Card>
           <CardHeader>
@@ -208,6 +385,9 @@ export default function LocationsPage() {
               • The <strong>Home Location</strong> (currently{" "}
               {locations.find((l) => l.id === homeLocationId)?.name}) is used as
               the reference point for all pressure gradient calculations.
+            </p>
+            <p>
+              • Select up to <strong>3 locations</strong> to display on the dashboard using the eye icon. Currently {dashboardLocationIds.length} selected.
             </p>
             <p>
               • You can have up to <strong>25 locations</strong> configured at

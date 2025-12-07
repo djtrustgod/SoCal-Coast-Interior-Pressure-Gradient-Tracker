@@ -16,20 +16,27 @@ All planned features have been successfully implemented and the application is r
 ### Key Features Implemented
 
 #### 1. Dashboard (`/`)
-- Displays home location (Santa Ana) current MSLP
-- Shows up to 3 comparison locations with pressure gradients
+- Displays customizable home location with current MSLP
+- Shows up to 3 user-selected comparison locations with pressure gradients
+- **Manual Refresh Button**: On-demand data refresh with spinning animation
+- **Timezone-Aware Timestamps**: All dates/times automatically converted to user's local timezone
+- **Current Hour Data**: Fetches most recent hour data, not just midnight values
 - Color-coded interpretations (offshore/onshore flow)
-- Automatic data updates with caching
-- Responsive grid layout
+- Automatic data updates with 1-hour cache revalidation
+- Responsive grid layout (2 columns on tablet, 3 on desktop)
 - Educational information about pressure gradients
 
 #### 2. Location Management (`/locations`)
-- View all 25 configured locations
+- View all 24 configured locations (up to 25 max)
+- **Set Home Location**: Home icon button with confirmation dialog
+- **Dashboard Selection**: Eye/EyeOff toggle buttons to select up to 3 locations for dashboard display
+- **Visual Badges**: Blue "HOME" and "DASHBOARD" badges on selected locations
+- **Edit Locations**: Pencil icon opens dialog to edit name, code, coordinates, type, and elevation
+- **Delete Locations**: Trash icon removes locations (prevents deletion if set as home)
 - Organized by type (coastal vs. interior)
 - Location details (coordinates, elevation, code)
-- Delete functionality (except home location)
-- Visual indicators for home location
-- Location counter (X of 25)
+- Location counter ("24 of 25 locations configured")
+- Responsive card layout
 
 #### 3. Theme System
 - Light and dark mode support
@@ -47,22 +54,26 @@ All planned features have been successfully implemented and the application is r
 - 1-hour cache revalidation
 
 **`/api/locations`**
-- GET: List all locations
+- GET: List all locations, homeLocationId, and dashboardLocationIds
 - POST: Add new location (max 25)
-- PUT: Update existing location
-- DELETE: Remove location (not home)
+- **PATCH: Update homeLocationId or dashboardLocationIds**
+- PUT: Update existing location details
+- DELETE: Remove location (prevents deletion of home location, auto-removes from dashboard)
 - Validation with Zod schema
+- Automatic cleanup (removes deleted locations from dashboard list)
 
 ### Technical Implementation
 
 #### Data Layer
-- **25 Pre-configured Locations**: Santa Ana, Santa Barbara, Santa Maria, Barstow, Las Vegas, LAX, Burbank, Ontario, Palm Springs, San Diego, Carlsbad, Santa Monica, Van Nuys, Oxnard, Bakersfield, San Luis Obispo, Visalia, El Centro, Indio, Long Beach, Riverside, San Bernardino, Monterey, San Jose, Yuma
+- **24 Pre-configured Locations**: Santa Ana, Santa Barbara, Santa Maria, Barstow, Daggett, LAX, Burbank, Ontario, Palm Springs, San Diego, Carlsbad, Santa Monica, Van Nuys, Oxnard, Bakersfield, San Luis Obispo, Visalia, El Centro, Indio, Long Beach, Riverside, San Bernardino, Monterey, San Jose
 
 - **Location Types**: 
   - Coastal: 13 locations
-  - Interior: 12 locations
+  - Interior: 11 locations
 
-- **Home Location**: Santa Ana (SNA) - configurable
+- **Home Location**: Santa Ana (SNA) - fully configurable via UI
+- **Dashboard Locations**: Santa Barbara, Santa Maria, Daggett (default) - fully configurable via UI (max 3)
+- **Timestamp Handling**: Fetches current/most recent hour data, timezone-aware display
 
 #### Calculations
 - **Pressure Gradient**: Home MSLP - Comparison MSLP
@@ -77,11 +88,16 @@ All planned features have been successfully implemented and the application is r
 
 #### UI Components
 - Card: Location and gradient display
-- Button: Actions and navigation
-- Select: Location picker (future enhancement)
+- Button: Actions and navigation (Home, Eye/EyeOff, Refresh, Edit, Delete)
+- Dialog: Confirmation dialogs and edit forms
+- Input: Form inputs for location editing
+- Label: Form labels
+- Select: Type selection in edit dialog
 - Theme Toggle: Light/dark mode
 - Header: Navigation and settings
-- Gradient Card: Pressure difference visualization
+- **Dashboard Content**: Client component with refresh functionality
+- **Gradient Card**: Pressure difference visualization with timezone-aware timestamps
+- **Edit Location Dialog**: Modal form for editing location details
 
 ### File Structure Created
 
@@ -100,8 +116,13 @@ All planned features have been successfully implemented and the application is r
 │   ├── ui/
 │   │   ├── button.tsx           # Button component
 │   │   ├── card.tsx             # Card component
+│   │   ├── dialog.tsx           # Dialog component
+│   │   ├── input.tsx            # Input component
+│   │   ├── label.tsx            # Label component
 │   │   └── select.tsx           # Select component
-│   ├── gradient-card.tsx        # Pressure gradient display
+│   ├── dashboard-content.tsx    # Client component with refresh
+│   ├── gradient-card.tsx        # Pressure gradient with timestamps
+│   ├── edit-location-dialog.tsx # Location edit modal
 │   ├── header.tsx               # App header with nav
 │   ├── location-selector.tsx   # Location picker (unused)
 │   ├── theme-provider.tsx       # Theme context provider
@@ -164,7 +185,6 @@ All planned features have been successfully implemented and the application is r
 
 ### Features
 - next-themes (theme system)
-- date-fns (date formatting)
 - zod (validation)
 - recharts (for future charts)
 
@@ -176,23 +196,30 @@ All planned features have been successfully implemented and the application is r
 
 ### ✅ Working Features
 1. Development server running on http://localhost:3000
-2. Dashboard displays pressure gradients
-3. Theme toggle (light/dark) functional
-4. Location management page accessible
-5. API endpoints responding correctly
-6. Data fetching from Open-Meteo API
-7. JSON storage working
-8. Responsive design implemented
+2. Dashboard displays pressure gradients with current hour data
+3. **Manual refresh button with spinning animation**
+4. **Timezone-aware timestamp display** (e.g., "Dec 6, 2025, 8:00 PM PST")
+5. **Set home location from Settings UI** with confirmation dialog
+6. **Select up to 3 dashboard locations** with Eye/EyeOff toggle buttons
+7. **Edit location details** via pencil icon and modal dialog
+8. **Visual badges** for HOME and DASHBOARD locations
+9. Theme toggle (light/dark) functional
+10. Location management page with full CRUD operations
+11. API endpoints responding correctly (GET/POST/PATCH/PUT/DELETE)
+12. Data fetching from Open-Meteo API with proper hour selection
+13. JSON storage working with homeLocationId and dashboardLocationIds
+14. Responsive design implemented
+15. Automatic removal of deleted locations from dashboard list
 
 ### 🔄 Future Enhancements (Not Required)
-1. Interactive location selector on dashboard
-2. Historical pressure trend charts
-3. Add location form (UI)
-4. Edit location functionality
-5. Custom home location selector
-6. Export data functionality
-7. Weather alerts/notifications
-8. Mobile app version
+1. Historical pressure trend charts with Recharts
+2. Export data functionality (CSV/JSON)
+3. Weather alerts/notifications
+4. Mobile app version
+5. User accounts and preferences
+6. Multiple saved dashboard configurations
+7. Wind speed/direction overlay
+8. Pressure trend indicators (rising/falling)
 
 ## Testing Checklist
 
@@ -217,17 +244,22 @@ All planned features have been successfully implemented and the application is r
 ## Known Issues/Limitations
 
 1. **CSS Linter Warnings**: Tailwind directives show warnings in VS Code (expected, not actual errors)
-2. **Location Selector**: Built but not integrated into dashboard (URL-based selection works)
-3. **Add Location UI**: Backend complete, frontend form not implemented
-4. **No Charts Yet**: Recharts installed but not used (future enhancement)
+2. **Source Map Warnings**: Next.js Turbopack shows source map parsing warnings (non-critical)
+3. **Add Location UI**: Backend complete, frontend form not implemented (can add via API)
+4. **No Historical Charts**: Recharts installed but not used (future enhancement)
+5. **Cache Duration**: 1-hour cache may show slightly stale data between refreshes
 
 ## How to Use
 
 1. **View Dashboard**: Open http://localhost:3000
-2. **Check Gradients**: See pressure differences for Santa Barbara, Santa Maria, Barstow vs Santa Ana
-3. **Switch Theme**: Click sun/moon icon
-4. **Manage Locations**: Click settings gear icon
-5. **Delete Locations**: Use trash icon (except home location)
+2. **Check Gradients**: See pressure differences for selected locations vs home location
+3. **Refresh Data**: Click refresh button to fetch latest pressure readings
+4. **Switch Theme**: Click sun/moon icon in header
+5. **Set Home Location**: Go to Settings → Click home icon next to desired location → Confirm
+6. **Select Dashboard Locations**: Go to Settings → Click eye icons to toggle up to 3 locations
+7. **Edit Locations**: Go to Settings → Click pencil icon → Update details → Save
+8. **Delete Locations**: Go to Settings → Click trash icon → Confirm (cannot delete home location)
+9. **View Timestamps**: All times shown in your local timezone automatically
 
 ## Deployment Ready
 
@@ -239,16 +271,23 @@ The application is ready for:
 
 ## Success Criteria Met
 
-✅ React + Next.js web application
+✅ React + Next.js web application (Next.js 16.0.7 with Turbopack)
 ✅ Lightweight persistent storage (JSON)
 ✅ Local web server capable
-✅ Modern, responsive UX
+✅ Modern, responsive UX with enhanced interactions
 ✅ Light and dark theme
 ✅ MSLP difference tracking
-✅ Home location + up to 3 comparisons
+✅ **Customizable home location** (UI-based selection)
+✅ **Customizable dashboard locations** (up to 3, UI-based selection)
+✅ **Manual data refresh** (on-demand updates)
+✅ **Timezone-aware timestamps** (automatic conversion)
+✅ **Current hour data fetching** (not just midnight)
+✅ **Full location CRUD** (Create, Read, Update, Delete)
 ✅ Configurable location list (max 25)
 ✅ Open-Meteo API integration
-✅ Initial 5 locations configured (SNA, SBA, SMX, DAG, LAS)
+✅ 24 pre-configured locations
+✅ Visual feedback (badges, icons, animations)
+✅ Responsive design (mobile, tablet, desktop)
 
 ## Next Steps
 
@@ -260,7 +299,8 @@ The application is ready for:
 
 ---
 
-**Project Status**: ✅ COMPLETE AND OPERATIONAL
-**Build Time**: ~15 minutes
-**Lines of Code**: ~2,500+
-**Technologies**: Next.js 14, React 18, TypeScript, Tailwind CSS, Open-Meteo API
+**Project Status**: ✅ COMPLETE AND FULLY FEATURED
+**Build Time**: Initial ~15 minutes + Enhancements ~2 hours
+**Lines of Code**: ~3,500+
+**Technologies**: Next.js 16.0.7 (Turbopack), React 18, TypeScript, Tailwind CSS, shadcn/ui, Open-Meteo API
+**Last Updated**: December 6, 2025

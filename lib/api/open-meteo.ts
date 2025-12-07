@@ -45,8 +45,22 @@ export async function fetchMSLPForLocation(
 
   const data: OpenMeteoResponse = await response.json();
 
-  // Get the most recent reading (first entry in hourly data)
-  const currentIndex = 0;
+  // Find the index for the current hour
+  // The API returns times in the timezone we specified (America/Los_Angeles)
+  const now = new Date();
+  const nowTimestamp = now.getTime();
+  
+  // Find the most recent hour that is not in the future
+  let currentIndex = 0;
+  for (let i = 0; i < data.hourly.time.length; i++) {
+    const apiTime = new Date(data.hourly.time[i]).getTime();
+    if (apiTime <= nowTimestamp) {
+      currentIndex = i;
+    } else {
+      break;
+    }
+  }
+  
   const timestamp = data.hourly.time[currentIndex];
   const pressure = data.hourly.pressure_msl[currentIndex];
   const temperature = data.hourly.temperature_2m?.[currentIndex];

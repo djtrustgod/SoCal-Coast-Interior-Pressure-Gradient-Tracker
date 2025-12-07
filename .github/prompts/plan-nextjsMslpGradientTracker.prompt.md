@@ -16,16 +16,7 @@ A React/Next.js web application that displays Mean Sea Level Pressure (MSLP) dif
 
 6. **Add API routes** at `app/api/pressure/route.ts` to fetch and cache Open-Meteo data with 1-hour revalidation, handling multiple location requests efficiently.
 
-## Further Considerations
-
-1. **Home location selection** -  "Home" should configurable by user.
-
-2. **Data refresh strategy** - Manual refresh button or auto-refresh every 5 minutes.  Auto-refresh value should be configurable.
-
-3. **Historical data scope** - Display only current readings.  No historical data functionality needed.
 
 ## Future Enhancements
 
-1. Edit location details (name, coordinates) in Settings UI.
-2. Select home location from list in Settings UI.
-3. Enable setting to control which locations appear on dashboard.
+1. Add the ability to change which locations, if they are not set as home, appear on the dashboard via the list in Settings UI. 

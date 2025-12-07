@@ -66,6 +66,16 @@ export function GradientCard({ gradient }: GradientCardProps) {
             {interpretation.description}
           </div>
         </div>
+        <div className="text-xs text-muted-foreground mt-2">
+          Updated: {new Date(gradient.timestamp).toLocaleString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+            hour: 'numeric',
+            minute: '2-digit',
+            timeZoneName: 'short'
+          })}
+        </div>
       </CardContent>
     </Card>
   );
