@@ -65,7 +65,8 @@ When implementing a feature:
 3. **Update README.md** with user-facing documentation
 4. **Update IMPLEMENTATION.md** with technical details
 5. **Verify documentation accuracy** by reading through changes
-6. **Commit all changes together** (code + documentation)
+6. **Update version number** in `package.json` if the change is significant (new features, breaking changes, or major bug fixes)
+7. **Commit all changes together** (code + documentation)
 
 ## Example Documentation Updates
 
