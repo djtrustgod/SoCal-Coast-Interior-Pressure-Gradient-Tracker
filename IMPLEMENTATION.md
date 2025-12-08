@@ -131,6 +131,7 @@ All planned features have been successfully implemented and the application is r
 │   ├── gradient-card.tsx        # Pressure gradient with timestamps
 │   ├── edit-location-dialog.tsx # Location edit modal
 │   ├── header.tsx               # App header with nav
+│   ├── footer.tsx               # Footer with version, date, license info
 │   ├── location-selector.tsx   # Location picker (unused)
 │   ├── theme-provider.tsx       # Theme context provider
 │   └── theme-toggle.tsx         # Light/dark toggle

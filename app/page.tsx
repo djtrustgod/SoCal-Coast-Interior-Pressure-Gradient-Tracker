@@ -1,6 +1,7 @@
 import { fetchMSLPForLocations } from "@/lib/api/open-meteo";
 import { calculateMultipleGradients } from "@/lib/calculations/gradient";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import { LocationSelector } from "@/components/location-selector";
 import { DashboardContent } from "@/components/dashboard-content";
 import locationsData from "@/data/locations.json";
@@ -43,15 +44,16 @@ export default async function Home({
   );
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 flex-1">
         <DashboardContent
           homeLocation={homeLocation}
           homePressure={homePressure}
           gradients={gradients}
         />
       </main>
+      <Footer />
     </div>
   );
 }

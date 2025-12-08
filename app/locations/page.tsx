@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Location } from "@/types/location";
 import { Header } from "@/components/header";
+import { Footer } from "@/components/footer";
 import {
   Card,
   CardContent,
@@ -226,9 +227,9 @@ export default function LocationsPage() {
   const interiorLocations = locations.filter((loc) => loc.type === "interior");
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 flex-1">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-3xl font-bold">Manage Locations</h2>
@@ -583,6 +584,7 @@ export default function LocationsPage() {
           )}
         </Card>
       </main>
+      <Footer />
     </div>
   );
 }
