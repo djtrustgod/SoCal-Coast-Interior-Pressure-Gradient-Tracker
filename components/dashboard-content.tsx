@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { RefreshCw } from "lucide-react";
 
@@ -22,6 +22,16 @@ export function DashboardContent({
 }: DashboardContentProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
+
+  // Auto-refresh every 5 minutes
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      router.refresh();
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+
+    // Cleanup interval on component unmount
+    return () => clearInterval(intervalId);
+  }, [router]);
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

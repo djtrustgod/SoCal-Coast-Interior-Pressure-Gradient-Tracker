@@ -23,3 +23,10 @@ export interface PressureGradient {
   difference: number; // home - compare
   timestamp: string;
 }
+
+export interface LocationSettings {
+  locations: Location[];
+  homeLocationId: string;
+  dashboardLocationIds: string[];
+  apiRefreshInterval: number; // in seconds
+}

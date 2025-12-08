@@ -61,7 +61,7 @@ async function fetchMSLPForLocation(location) {
     url.searchParams.append("timezone", "America/Los_Angeles");
     const response = await fetch(url.toString(), {
         next: {
-            revalidate: 3600
+            revalidate: 300
         }
     });
     if (!response.ok) {
@@ -121,13 +121,15 @@ async function fetchHistoricalMSLP(location, startDate, endDate) {
 }),
 "[project]/data/locations.json (json)", ((__turbopack_context__) => {
 
-__turbopack_context__.v({"locations":[{"id":"sna","name":"Santa Ana","code":"SNA","latitude":33.6762,"longitude":-117.8681,"type":"coast","elevation":17},{"id":"sba","name":"Santa Barbara","code":"SBA","latitude":34.4264,"longitude":-119.8403,"type":"coast","elevation":3},{"id":"smx","name":"Santa Maria","code":"SMX","latitude":34.8989,"longitude":-120.4573,"type":"coast","elevation":73},{"id":"dag","name":"Barstow","code":"DAG","latitude":34.8542,"longitude":-116.7866,"type":"interior","elevation":585},{"id":"las","name":"Las Vegas","code":"LAS","latitude":36.084,"longitude":-115.1537,"type":"interior","elevation":664},{"id":"lax","name":"Los Angeles (LAX)","code":"LAX","latitude":33.9416,"longitude":-118.4085,"type":"coast","elevation":38},{"id":"bur","name":"Burbank","code":"BUR","latitude":34.2006,"longitude":-118.359,"type":"interior","elevation":236},{"id":"ont","name":"Ontario","code":"ONT","latitude":34.056,"longitude":-117.6012,"type":"interior","elevation":287},{"id":"psp","name":"Palm Springs","code":"PSP","latitude":33.8297,"longitude":-116.5067,"type":"interior","elevation":145},{"id":"san","name":"San Diego","code":"SAN","latitude":32.7338,"longitude":-117.1933,"type":"coast","elevation":9},{"id":"crq","name":"Carlsbad","code":"CRQ","latitude":33.1283,"longitude":-117.28,"type":"coast","elevation":100},{"id":"smo","name":"Santa Monica","code":"SMO","latitude":34.0158,"longitude":-118.4513,"type":"coast","elevation":53},{"id":"vnr","name":"Van Nuys","code":"VNR","latitude":34.2098,"longitude":-118.4897,"type":"interior","elevation":244},{"id":"oxr","name":"Oxnard","code":"OXR","latitude":34.2008,"longitude":-119.207,"type":"coast","elevation":13},{"id":"bfl","name":"Bakersfield","code":"BFL","latitude":35.4336,"longitude":-119.0568,"type":"interior","elevation":150},{"id":"sbp","name":"San Luis Obispo","code":"SBP","latitude":35.2368,"longitude":-120.6424,"type":"coast","elevation":65},{"id":"vis","name":"Visalia","code":"VIS","latitude":36.3186,"longitude":-119.393,"type":"interior","elevation":90},{"id":"ipx","name":"Indio/Thermal","code":"IPX","latitude":33.6269,"longitude":-116.16,"type":"interior","elevation":-22},{"id":"lbb","name":"Long Beach","code":"LBB","latitude":33.8176,"longitude":-118.1516,"type":"coast","elevation":18},{"id":"riv","name":"Riverside","code":"RIV","latitude":33.9519,"longitude":-117.3962,"type":"interior","elevation":253},{"id":"sbd","name":"San Bernardino","code":"SBD","latitude":34.0953,"longitude":-117.2352,"type":"interior","elevation":348},{"id":"mry","name":"Monterey","code":"MRY","latitude":36.5874,"longitude":-121.843,"type":"coast","elevation":78},{"id":"sjc","name":"San Jose","code":"SJC","latitude":37.3639,"longitude":-121.9289,"type":"interior","elevation":18},{"id":"yum","name":"Yuma","code":"YUM","latitude":32.6566,"longitude":-114.606,"type":"interior","elevation":65}],"homeLocationId":"sna","dashboardLocationIds":["dag","las"]});}),
+__turbopack_context__.v({"locations":[{"id":"sna","name":"Santa Ana","code":"SNA","latitude":33.6762,"longitude":-117.8681,"type":"coast","elevation":17},{"id":"sba","name":"Santa Barbara","code":"SBA","latitude":34.4264,"longitude":-119.8403,"type":"coast","elevation":3},{"id":"smx","name":"Santa Maria","code":"SMX","latitude":34.8989,"longitude":-120.4573,"type":"coast","elevation":73},{"id":"dag","name":"Barstow","code":"DAG","latitude":34.8542,"longitude":-116.7866,"type":"interior","elevation":585},{"id":"las","name":"Las Vegas","code":"LAS","latitude":36.084,"longitude":-115.1537,"type":"interior","elevation":664},{"id":"lax","name":"Los Angeles (LAX)","code":"LAX","latitude":33.9416,"longitude":-118.4085,"type":"coast","elevation":38},{"id":"bur","name":"Burbank","code":"BUR","latitude":34.2006,"longitude":-118.359,"type":"interior","elevation":236},{"id":"ont","name":"Ontario","code":"ONT","latitude":34.056,"longitude":-117.6012,"type":"interior","elevation":287},{"id":"psp","name":"Palm Springs","code":"PSP","latitude":33.8297,"longitude":-116.5067,"type":"interior","elevation":145},{"id":"san","name":"San Diego","code":"SAN","latitude":32.7338,"longitude":-117.1933,"type":"coast","elevation":9},{"id":"crq","name":"Carlsbad","code":"CRQ","latitude":33.1283,"longitude":-117.28,"type":"coast","elevation":100},{"id":"smo","name":"Santa Monica","code":"SMO","latitude":34.0158,"longitude":-118.4513,"type":"coast","elevation":53},{"id":"vnr","name":"Van Nuys","code":"VNR","latitude":34.2098,"longitude":-118.4897,"type":"interior","elevation":244},{"id":"oxr","name":"Oxnard","code":"OXR","latitude":34.2008,"longitude":-119.207,"type":"coast","elevation":13},{"id":"bfl","name":"Bakersfield","code":"BFL","latitude":35.4336,"longitude":-119.0568,"type":"interior","elevation":150},{"id":"sbp","name":"San Luis Obispo","code":"SBP","latitude":35.2368,"longitude":-120.6424,"type":"coast","elevation":65},{"id":"vis","name":"Visalia","code":"VIS","latitude":36.3186,"longitude":-119.393,"type":"interior","elevation":90},{"id":"ipx","name":"Indio/Thermal","code":"IPX","latitude":33.6269,"longitude":-116.16,"type":"interior","elevation":-22},{"id":"lbb","name":"Long Beach","code":"LBB","latitude":33.8176,"longitude":-118.1516,"type":"coast","elevation":18},{"id":"riv","name":"Riverside","code":"RIV","latitude":33.9519,"longitude":-117.3962,"type":"interior","elevation":253},{"id":"sbd","name":"San Bernardino","code":"SBD","latitude":34.0953,"longitude":-117.2352,"type":"interior","elevation":348},{"id":"mry","name":"Monterey","code":"MRY","latitude":36.5874,"longitude":-121.843,"type":"coast","elevation":78},{"id":"sjc","name":"San Jose","code":"SJC","latitude":37.3639,"longitude":-121.9289,"type":"interior","elevation":18},{"id":"yum","name":"Yuma","code":"YUM","latitude":32.6566,"longitude":-114.606,"type":"interior","elevation":65}],"homeLocationId":"sna","dashboardLocationIds":["dag","las"],"apiRefreshInterval":300});}),
 "[project]/app/api/pressure/route.ts [app-route] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
 __turbopack_context__.s([
     "GET",
     ()=>GET,
+    "dynamic",
+    ()=>dynamic,
     "revalidate",
     ()=>revalidate
 ]);
@@ -137,6 +139,8 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$data$2f$locations$2e$json__$
 ;
 ;
 ;
+const dynamic = 'force-dynamic';
+const revalidate = 300; // 5 minutes default
 async function GET(request) {
     try {
         const searchParams = request.nextUrl.searchParams;
@@ -173,7 +177,6 @@ async function GET(request) {
         });
     }
 }
-const revalidate = 3600; // Cache for 1 hour
 }),
 ];
 

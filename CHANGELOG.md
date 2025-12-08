@@ -7,15 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2025-12-07
+
 ### Added
 - Comprehensive `.gitignore` file with Next.js, TypeScript, Node.js, IDE, and OS-specific entries
 - CHANGELOG.md for tracking project changes
+- API refresh interval setting UI (1, 5, 10, 15, 30, 60 minutes) for user preference tracking
+- Auto-refresh dashboard feature - automatically refreshes every 5 minutes using `useEffect` and `setInterval`
+- Select dropdown in Settings to configure and store API refresh interval preference
+- `LocationSettings` TypeScript interface to include `apiRefreshInterval` field
+- API validation for refresh interval (minimum 60 seconds, maximum 3600 seconds)
+- User notification when API refresh interval preference is updated
 
 ### Fixed
 - Next.js build error with `/api/pressure` route by adding `export const dynamic = 'force-dynamic'` to handle dynamic server rendering
 
 ### Changed
 - Updated Copilot instructions workflow to include version number update guidance for significant changes
+- Updated Copilot instructions to include CHANGELOG.md in documentation update workflow
+- API refresh interval fixed at 300 seconds (5 minutes) for Next.js build compatibility
+- `/api/locations` GET endpoint now returns `apiRefreshInterval` preference setting
+- `/api/locations` PATCH endpoint now accepts and validates `apiRefreshInterval` preference
+- Dashboard auto-refreshes to keep data current even when browser tab is open for extended periods
+
+### Technical Notes
+- API refresh interval is stored as user preference but currently fixed at 5 minutes due to Next.js static export limitations
+- Future enhancement: Implement runtime-configurable caching when using dynamic hosting
 
 ## [1.0.0] - 2025-12-07
 

@@ -34,6 +34,7 @@ export async function GET() {
       locations: data.locations,
       homeLocationId: data.homeLocationId,
       dashboardLocationIds: data.dashboardLocationIds || [],
+      apiRefreshInterval: data.apiRefreshInterval || 300,
     });
   } catch (error) {
     console.error("Error reading locations:", error);
@@ -130,11 +131,11 @@ export async function PUT(request: NextRequest) {
   }
 }
 
-// PATCH - Update home location or dashboard locations
+// PATCH - Update home location, dashboard locations, or API refresh interval
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { homeLocationId, dashboardLocationIds } = body;
+    const { homeLocationId, dashboardLocationIds, apiRefreshInterval } = body;
 
     const data = await readLocationsFile();
 
@@ -189,12 +190,40 @@ export async function PATCH(request: NextRequest) {
       data.dashboardLocationIds = dashboardLocationIds;
     }
 
+    if (apiRefreshInterval !== undefined) {
+      if (typeof apiRefreshInterval !== "number") {
+        return NextResponse.json(
+          { error: "apiRefreshInterval must be a number" },
+          { status: 400 }
+        );
+      }
+
+      // Minimum 60 seconds to prevent API abuse
+      if (apiRefreshInterval < 60) {
+        return NextResponse.json(
+          { error: "apiRefreshInterval must be at least 60 seconds" },
+          { status: 400 }
+        );
+      }
+
+      // Maximum 1 hour (3600 seconds)
+      if (apiRefreshInterval > 3600) {
+        return NextResponse.json(
+          { error: "apiRefreshInterval must be at most 3600 seconds" },
+          { status: 400 }
+        );
+      }
+
+      data.apiRefreshInterval = apiRefreshInterval;
+    }
+
     await writeLocationsFile(data);
 
     return NextResponse.json({
       success: true,
       homeLocationId: data.homeLocationId,
       dashboardLocationIds: data.dashboardLocationIds,
+      apiRefreshInterval: data.apiRefreshInterval,
     });
   } catch (error) {
     console.error("Error updating settings:", error);

@@ -221,5 +221,6 @@
   "dashboardLocationIds": [
     "dag",
     "las"
-  ]
+  ],
+  "apiRefreshInterval": 300
 }

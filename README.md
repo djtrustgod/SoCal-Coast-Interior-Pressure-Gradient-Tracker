@@ -12,9 +12,11 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 - 🏠 **Set Home Location**: Choose any location as your home base from the Settings UI
 - 👁️ **Dashboard Customization**: Select up to 3 locations to display on the dashboard
 - 🔄 **Manual Refresh**: On-demand refresh button to fetch the latest pressure data
+- 🔁 **Auto-Refresh Dashboard**: Dashboard automatically refreshes every 5 minutes in the browser
+- ⚙️ **Configurable API Refresh**: Set API data refresh interval from 1 to 60 minutes
 - 🕐 **Timezone-Aware Timestamps**: All timestamps automatically converted to your local timezone
 - 💾 **Persistent Storage**: JSON-based data storage for location configurations
-- ⏱️ **Smart Data Updates**: Data cached with 1-hour revalidation, shows current hour readings
+- ⏱️ **Smart Data Updates**: Data cached with configurable revalidation (default 5 minutes), shows current hour readings
 
 ## Technology Stack
 
@@ -63,7 +65,8 @@ The main dashboard displays:
 - Color-coded interpretations (offshore flow, onshore flow, neutral)
 - Last update timestamps in your local timezone (e.g., "Dec 6, 2025, 8:00 PM PST")
 - Manual refresh button to fetch the latest data on-demand
-- Automatic data updates with 1-hour cache revalidation
+- Automatic browser refresh every 5 minutes to keep data current
+- Configurable API data caching (1-60 minutes)
 
 ### Interpreting Gradients
 
@@ -77,6 +80,7 @@ Navigate to the Settings (gear icon) to:
 - View all configured locations (coastal vs. interior)
 - **Set Home Location**: Click the home icon next to any location to set it as your home base
 - **Select Dashboard Locations**: Click the eye icon to add/remove locations from dashboard display (max 3)
+- **Configure API Refresh Interval**: Set how often data is fetched from Open-Meteo API (1, 5, 10, 15, 30, or 60 minutes)
 - Add new locations (up to 25 total)
 - Edit existing locations (name, code, coordinates, type, elevation)
 - Delete locations (locations in use as home cannot be deleted)
@@ -158,7 +162,7 @@ Add a new location.
 \`\`\`
 
 ### PATCH /api/locations
-Update home location or dashboard location selections.
+Update home location, dashboard location selections, or API refresh interval.
 
 **Body (Set Home):**
 \`\`\`json
@@ -173,6 +177,14 @@ Update home location or dashboard location selections.
   "dashboardLocationIds": ["sba", "smx", "dag"]
 }
 \`\`\`
+
+**Body (Set API Refresh Interval):**
+\`\`\`json
+{
+  "apiRefreshInterval": 300
+}
+\`\`\`
+*Note: Value in seconds, minimum 60, maximum 3600*
 
 ### PUT /api/locations
 Update an existing location's details.

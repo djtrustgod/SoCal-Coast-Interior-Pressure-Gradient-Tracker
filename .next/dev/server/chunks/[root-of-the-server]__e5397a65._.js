@@ -103,7 +103,8 @@ async function GET() {
             success: true,
             locations: data.locations,
             homeLocationId: data.homeLocationId,
-            dashboardLocationIds: data.dashboardLocationIds || []
+            dashboardLocationIds: data.dashboardLocationIds || [],
+            apiRefreshInterval: data.apiRefreshInterval || 300
         });
     } catch (error) {
         console.error("Error reading locations:", error);
@@ -197,7 +198,7 @@ async function PUT(request) {
 async function PATCH(request) {
     try {
         const body = await request.json();
-        const { homeLocationId, dashboardLocationIds } = body;
+        const { homeLocationId, dashboardLocationIds, apiRefreshInterval } = body;
         const data = await readLocationsFile();
         if (homeLocationId !== undefined) {
             if (typeof homeLocationId !== "string") {
@@ -242,11 +243,38 @@ async function PATCH(request) {
             }
             data.dashboardLocationIds = dashboardLocationIds;
         }
+        if (apiRefreshInterval !== undefined) {
+            if (typeof apiRefreshInterval !== "number") {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    error: "apiRefreshInterval must be a number"
+                }, {
+                    status: 400
+                });
+            }
+            // Minimum 60 seconds to prevent API abuse
+            if (apiRefreshInterval < 60) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    error: "apiRefreshInterval must be at least 60 seconds"
+                }, {
+                    status: 400
+                });
+            }
+            // Maximum 1 hour (3600 seconds)
+            if (apiRefreshInterval > 3600) {
+                return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
+                    error: "apiRefreshInterval must be at most 3600 seconds"
+                }, {
+                    status: 400
+                });
+            }
+            data.apiRefreshInterval = apiRefreshInterval;
+        }
         await writeLocationsFile(data);
         return __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$server$2e$js__$5b$app$2d$route$5d$__$28$ecmascript$29$__["NextResponse"].json({
             success: true,
             homeLocationId: data.homeLocationId,
-            dashboardLocationIds: data.dashboardLocationIds
+            dashboardLocationIds: data.dashboardLocationIds,
+            apiRefreshInterval: data.apiRefreshInterval
         });
     } catch (error) {
         console.error("Error updating settings:", error);

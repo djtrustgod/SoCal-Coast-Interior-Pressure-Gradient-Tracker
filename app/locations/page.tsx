@@ -11,13 +11,21 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trash2, MapPin, Pencil, Home, Eye, EyeOff, Bug, RefreshCw } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Plus, Trash2, MapPin, Pencil, Home, Eye, EyeOff, Bug, RefreshCw, Clock } from "lucide-react";
 import { EditLocationDialog } from "@/components/edit-location-dialog";
 
 export default function LocationsPage() {
   const [locations, setLocations] = useState<Location[]>([]);
   const [homeLocationId, setHomeLocationId] = useState<string>("");
   const [dashboardLocationIds, setDashboardLocationIds] = useState<string[]>([]);
+  const [apiRefreshInterval, setApiRefreshInterval] = useState<number>(300);
   const [loading, setLoading] = useState(true);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -37,6 +45,7 @@ export default function LocationsPage() {
         setLocations(data.locations);
         setHomeLocationId(data.homeLocationId);
         setDashboardLocationIds(data.dashboardLocationIds || []);
+        setApiRefreshInterval(data.apiRefreshInterval || 300);
       }
     } catch (error) {
       console.error("Error fetching locations:", error);
@@ -158,6 +167,31 @@ export default function LocationsPage() {
     } catch (error) {
       console.error("Error updating dashboard locations:", error);
       alert("Failed to update dashboard locations");
+    }
+  };
+
+  const handleApiRefreshChange = async (value: string) => {
+    const intervalSeconds = parseInt(value);
+    
+    try {
+      const response = await fetch("/api/locations", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ apiRefreshInterval: intervalSeconds }),
+      });
+
+      if (response.ok) {
+        setApiRefreshInterval(intervalSeconds);
+        alert(`API refresh interval updated to ${intervalSeconds / 60} minute(s). Changes will take effect after the next build.`);
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error}`);
+      }
+    } catch (error) {
+      console.error("Error updating API refresh interval:", error);
+      alert("Failed to update API refresh interval");
     }
   };
 
@@ -395,34 +429,83 @@ export default function LocationsPage() {
           onSave={handleSaveEdit}
         />
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Instructions</CardTitle>
-          </CardHeader>
-          <CardContent className="text-sm text-muted-foreground space-y-2">
-            <p>
-              • The <strong>Home Location</strong> (currently{" "}
-              {locations.find((l) => l.id === homeLocationId)?.name}) is used as
-              the reference point for all pressure gradient calculations.
-            </p>
-            <p>
-              • Select up to <strong>3 locations</strong> to display on the dashboard using the eye icon. Currently {dashboardLocationIds.length} selected.
-            </p>
-            <p>
-              • You can have up to <strong>25 locations</strong> configured at
-              once.
-            </p>
-            <p>
-              • <strong>Coastal locations</strong> are typically used to measure
-              marine influence, while <strong>interior locations</strong> help
-              identify offshore flow patterns.
-            </p>
-            <p>
-              • To add a new location, click the "Add Location" button and
-              provide the required details including coordinates.
-            </p>
-          </CardContent>
-        </Card>
+        <div className="grid gap-6 md:grid-cols-2 mb-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Instructions</CardTitle>
+            </CardHeader>
+            <CardContent className="text-sm text-muted-foreground space-y-2">
+              <p>
+                • The <strong>Home Location</strong> (currently{" "}
+                {locations.find((l) => l.id === homeLocationId)?.name}) is used as
+                the reference point for all pressure gradient calculations.
+              </p>
+              <p>
+                • Select up to <strong>3 locations</strong> to display on the dashboard using the eye icon. Currently {dashboardLocationIds.length} selected.
+              </p>
+              <p>
+                • You can have up to <strong>25 locations</strong> configured at
+                once.
+              </p>
+              <p>
+                • <strong>Coastal locations</strong> are typically used to measure
+                marine influence, while <strong>interior locations</strong> help
+                identify offshore flow patterns.
+              </p>
+              <p>
+                • To add a new location, click the "Add Location" button and
+                provide the required details including coordinates.
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Clock className="h-5 w-5" />
+                API Refresh Settings
+              </CardTitle>
+              <CardDescription>
+                Configure how often data is fetched from Open-Meteo API
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-2 block">
+                  API Refresh Interval
+                </label>
+                <Select
+                  value={apiRefreshInterval.toString()}
+                  onValueChange={handleApiRefreshChange}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="60">1 minute</SelectItem>
+                    <SelectItem value="300">5 minutes</SelectItem>
+                    <SelectItem value="600">10 minutes</SelectItem>
+                    <SelectItem value="900">15 minutes</SelectItem>
+                    <SelectItem value="1800">30 minutes</SelectItem>
+                    <SelectItem value="3600">60 minutes</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-2">
+                  Currently set to {apiRefreshInterval / 60} minute(s). This controls
+                  how often fresh data is fetched from the weather API.
+                </p>
+              </div>
+              <div className="text-xs text-muted-foreground bg-muted p-3 rounded-lg">
+                <p className="font-medium mb-1">Note:</p>
+                <p>
+                  The dashboard auto-refreshes every 5 minutes in the browser.
+                  Setting a lower API refresh interval ensures you always see the
+                  freshest data.
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <Card className="mt-6">
           <CardHeader>

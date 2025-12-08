@@ -4,6 +4,7 @@ import locationsData from "@/data/locations.json";
 import { Location } from "@/types/location";
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 300; // 5 minutes default
 
 export async function GET(request: NextRequest) {
   try {
@@ -47,5 +48,3 @@ export async function GET(request: NextRequest) {
     );
   }
 }
-
-export const revalidate = 3600; // Cache for 1 hour

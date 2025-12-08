@@ -34,7 +34,7 @@ export async function fetchMSLPForLocation(
   url.searchParams.append("timezone", "America/Los_Angeles");
 
   const response = await fetch(url.toString(), {
-    next: { revalidate: 3600 }, // Cache for 1 hour
+    next: { revalidate: 300 }, // 5 minutes default
   });
 
   if (!response.ok) {

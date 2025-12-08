@@ -493,6 +493,14 @@ body {
   margin-bottom: .25rem;
 }
 
+.mb-1 {
+  margin-bottom: .25rem;
+}
+
+.mb-2 {
+  margin-bottom: .5rem;
+}
+
 .mb-6 {
   margin-bottom: 1.5rem;
 }
@@ -515,6 +523,10 @@ body {
 
 .mt-6 {
   margin-top: 1.5rem;
+}
+
+.block {
+  display: block;
 }
 
 .flex {
