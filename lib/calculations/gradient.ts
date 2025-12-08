@@ -45,6 +45,8 @@ export function calculateMultipleGradients(
 
 /**
  * Get gradient interpretation
+ * Positive gradient: Coast pressure > Inland pressure → Onshore flow
+ * Negative gradient: Inland pressure > Coast pressure → Offshore flow
  */
 export function interpretGradient(gradient: number): {
   label: string;
@@ -53,21 +55,21 @@ export function interpretGradient(gradient: number): {
 } {
   if (gradient > 5) {
     return {
-      label: "Strong Offshore Flow",
-      description: "High pressure over land, strong gradient toward coast",
-      color: "text-red-600 dark:text-red-400",
+      label: "Strong Onshore Flow",
+      description: "High pressure over coast, strong gradient toward land",
+      color: "text-indigo-600 dark:text-indigo-400",
     };
   } else if (gradient > 2) {
     return {
-      label: "Moderate Offshore Flow",
-      description: "Moderate pressure gradient favoring offshore winds",
-      color: "text-orange-600 dark:text-orange-400",
+      label: "Moderate Onshore Flow",
+      description: "Moderate pressure gradient favoring onshore winds",
+      color: "text-cyan-600 dark:text-cyan-400",
     };
   } else if (gradient > 0.5) {
     return {
-      label: "Weak Offshore Flow",
-      description: "Slight pressure gradient toward coast",
-      color: "text-yellow-600 dark:text-yellow-400",
+      label: "Weak Onshore Flow",
+      description: "Slight pressure gradient toward land",
+      color: "text-blue-600 dark:text-blue-400",
     };
   } else if (gradient > -0.5) {
     return {
@@ -77,21 +79,21 @@ export function interpretGradient(gradient: number): {
     };
   } else if (gradient > -2) {
     return {
-      label: "Weak Onshore Flow",
-      description: "Slight pressure gradient toward land",
-      color: "text-blue-600 dark:text-blue-400",
+      label: "Weak Offshore Flow",
+      description: "Slight pressure gradient toward coast",
+      color: "text-yellow-600 dark:text-yellow-400",
     };
   } else if (gradient > -5) {
     return {
-      label: "Moderate Onshore Flow",
-      description: "Moderate pressure gradient favoring onshore winds",
-      color: "text-cyan-600 dark:text-cyan-400",
+      label: "Moderate Offshore Flow",
+      description: "Moderate pressure gradient favoring offshore winds",
+      color: "text-orange-600 dark:text-orange-400",
     };
   } else {
     return {
-      label: "Strong Onshore Flow",
-      description: "High pressure over coast, strong gradient toward land",
-      color: "text-indigo-600 dark:text-indigo-400",
+      label: "Strong Offshore Flow",
+      description: "High pressure over land, strong gradient toward coast",
+      color: "text-red-600 dark:text-red-400",
     };
   }
 }

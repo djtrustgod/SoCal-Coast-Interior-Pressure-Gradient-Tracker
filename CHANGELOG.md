@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2025-12-07
+
+### Fixed
+- **Critical bug**: Corrected gradient interpretation logic - positive gradients (coast pressure > inland) now correctly show "Onshore Flow" instead of "Offshore Flow", and negative gradients (inland pressure > coast) now correctly show "Offshore Flow" instead of "Onshore Flow"
+
 ## [1.0.1] - 2025-12-07
 
 ### Added
