@@ -7,6 +7,15 @@ export function Footer() {
             <span className="font-semibold">Version 1.0.2</span>
             <span className="hidden md:inline">•</span>
             <span>Built December 7, 2025</span>
+            <span className="hidden md:inline">•</span>
+            <a
+              href="https://github.com/djtrustgod/SoCal-Coast-Interior-Pressure-Gradient-Tracker"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground transition-colors"
+            >
+              GitHub
+            </a>
           </div>
           <div className="text-center md:text-right">
             <p>
