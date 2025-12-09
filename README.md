@@ -89,7 +89,7 @@ Navigate to the Settings (gear icon) to:
 
 ## Project Structure
 
-\`\`\`
+```
 ├── app/
 │   ├── layout.tsx           # Root layout with theme provider
 │   ├── page.tsx             # Main dashboard (server component)
@@ -118,7 +118,7 @@ Navigate to the Settings (gear icon) to:
 ├── types/
 │   └── location.ts          # TypeScript type definitions
 └── public/                  # Static assets
-\`\`\`
+```
 
 ## API Endpoints
 
