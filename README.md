@@ -38,18 +38,18 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 ### Installation
 
 1. Clone the repository:
-\`\`\`bash
+\`\`\`
 git clone https://github.com/djtrustgod/SoCal-Coast-Interior-Pressure-Gradient-Tracker.git
 cd SoCal-Coast-Interior-Pressure-Gradient-Tracker
 \`\`\`
 
 2. Install dependencies:
-\`\`\`bash
+\`\`\`
 npm install
 \`\`\`
 
 3. Run the development server:
-\`\`\`bash
+\`\`\`
 npm run dev
 \`\`\`
 
