@@ -4,8 +4,18 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { LocationSelector } from "@/components/location-selector";
 import { DashboardContent } from "@/components/dashboard-content";
-import locationsData from "@/data/locations.json";
 import { Location } from "@/types/location";
+import { promises as fs } from "fs";
+import path from "path";
+
+async function readLocationsFile() {
+  const locationsFilePath = path.join(process.cwd(), "data", "locations.json");
+  const fileContents = await fs.readFile(locationsFilePath, "utf8");
+  return JSON.parse(fileContents);
+}
+
+// Force dynamic rendering to always read fresh data from locations.json
+export const dynamic = 'force-dynamic';
 
 // This is a Server Component by default
 export default async function Home({
@@ -14,6 +24,7 @@ export default async function Home({
   searchParams: Promise<{ compare?: string }>;
 }) {
   const params = await searchParams;
+  const locationsData = await readLocationsFile();
   const locations = locationsData.locations as Location[];
   const homeLocationId = locationsData.homeLocationId;
   const homeLocation = locations.find((loc) => loc.id === homeLocationId)!;
