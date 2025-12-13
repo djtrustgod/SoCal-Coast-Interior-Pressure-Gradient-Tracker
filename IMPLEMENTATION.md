@@ -81,6 +81,7 @@ All planned features have been successfully implemented and the application is r
 - **API Refresh Interval**: 300 seconds (5 minutes) - configurable from 60 to 3600 seconds
 - **Auto-Refresh**: Dashboard refreshes every 5 minutes (300000ms) automatically
 - **Timestamp Handling**: Fetches current/most recent hour data, timezone-aware display
+- **Runtime Data Loading**: Locations read from file system at runtime using `fs.readFile()` instead of static imports, ensuring changes are immediately reflected without rebuild
 
 #### Calculations
 - **Pressure Gradient**: Home MSLP - Comparison MSLP
@@ -141,6 +142,8 @@ All planned features have been successfully implemented and the application is r
 │   │   └── open-meteo.ts        # Weather API client
 │   ├── calculations/
 │   │   └── gradient.ts          # Pressure calculations
+│   ├── data/
+│   │   └── locations.ts         # Shared file system utilities (readLocationsFile, writeLocationsFile)
 │   └── utils.ts                 # Utility functions
 │
 ├── data/

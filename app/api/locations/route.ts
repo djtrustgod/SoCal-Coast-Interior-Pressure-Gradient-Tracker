@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { promises as fs } from "fs";
-import path from "path";
 import { Location } from "@/types/location";
 import { z } from "zod";
+import { readLocationsFile, writeLocationsFile } from "@/lib/data/locations";
 
 const LocationSchema = z.object({
   id: z.string().min(1),
@@ -13,17 +12,6 @@ const LocationSchema = z.object({
   type: z.enum(["coast", "interior"]),
   elevation: z.number().optional(),
 });
-
-const locationsFilePath = path.join(process.cwd(), "data", "locations.json");
-
-async function readLocationsFile() {
-  const fileContents = await fs.readFile(locationsFilePath, "utf8");
-  return JSON.parse(fileContents);
-}
-
-async function writeLocationsFile(data: any) {
-  await fs.writeFile(locationsFilePath, JSON.stringify(data, null, 2), "utf8");
-}
 
 // GET all locations
 export async function GET() {

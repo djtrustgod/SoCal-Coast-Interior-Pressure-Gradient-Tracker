@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchMSLPForLocations } from "@/lib/api/open-meteo";
-import locationsData from "@/data/locations.json";
+import { readLocationsFile } from "@/lib/data/locations";
 import { Location } from "@/types/location";
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +18,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const locations = locationsData.locations as Location[];
+    const locationsData = await readLocationsFile();
+    const locations = locationsData.locations;
     const requestedLocations = locationIds
       .map((id) => locations.find((loc) => loc.id === id))
       .filter(Boolean) as Location[];

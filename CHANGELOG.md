@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-12-13
+
+### Fixed
+- **Critical bug**: Static imports of `locations.json` cached data at build time, preventing runtime location updates from appearing without rebuild
+- Dashboard and pressure API now read location data from file system at runtime using `fs.readFile()`
+
+### Added
+- Shared file system utility module `lib/data/locations.ts` with `readLocationsFile()` and `writeLocationsFile()` functions
+- `LocationSettings` return type annotation for type safety across location data readers
+
+### Changed
+- `app/page.tsx` now reads locations at runtime instead of using static import
+- `app/api/pressure/route.ts` now reads locations at runtime instead of using static import
+- `app/api/locations/route.ts` refactored to use shared file system utilities
+- Location changes now immediately reflected in dashboard without requiring rebuild
+
 ## [1.0.2] - 2025-12-07
 
 ### Added
