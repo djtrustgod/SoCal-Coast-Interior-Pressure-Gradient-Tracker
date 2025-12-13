@@ -75,3 +75,4 @@ Desktop.ini
 *.tmp
 *.temp
 .cache
+next-env.d.ts
