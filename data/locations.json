@@ -220,7 +220,8 @@
   "homeLocationId": "sna",
   "dashboardLocationIds": [
     "dag",
-    "las"
+    "las",
+    "sbd"
   ],
   "apiRefreshInterval": 300
 }
