@@ -4,7 +4,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { LocationSelector } from "@/components/location-selector";
 import { DashboardContent } from "@/components/dashboard-content";
-import locationsData from "@/data/locations.json";
+import { readLocationsFile } from "@/lib/data/locations";
 import { Location } from "@/types/location";
 
 // This is a Server Component by default
@@ -14,7 +14,8 @@ export default async function Home({
   searchParams: Promise<{ compare?: string }>;
 }) {
   const params = await searchParams;
-  const locations = locationsData.locations as Location[];
+  const locationsData = await readLocationsFile();
+  const locations = locationsData.locations;
   const homeLocationId = locationsData.homeLocationId;
   const homeLocation = locations.find((loc) => loc.id === homeLocationId)!;
 

@@ -112,6 +112,8 @@ Navigate to the Settings (gear icon) to:
 │   │   └── open-meteo.ts    # Open-Meteo API client
 │   ├── calculations/
 │   │   └── gradient.ts      # Pressure gradient calculations
+│   ├── data/
+│   │   └── locations.ts     # Shared file reader utilities for locations.json
 │   └── utils.ts             # Utility functions
 ├── data/
 │   └── locations.json       # Location configurations
