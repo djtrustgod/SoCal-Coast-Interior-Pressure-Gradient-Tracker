@@ -1,4 +1,5 @@
-# SoCal Coast-Interior Pressure Gradient Tracker 💨
+# SoCal Coast-Interior Pressure Gradient Tracker 🍃
+
 
 A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP) differences between coastal and interior Southern California locations. This tool helps visualize pressure gradients that indicate offshore vs. onshore wind patterns.
 
