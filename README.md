@@ -3,6 +3,11 @@
 
 A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP) differences between coastal and interior Southern California locations. This tool helps visualize pressure gradients that indicate offshore vs. onshore wind patterns.
 
+## Screenshots
+
+![Dashboard with 24-Hour Pressure Trends](docs/dashboard-screenshot.png)
+*Dashboard showing real-time pressure gradients with interactive 24-hour trend charts for comparison locations*
+
 ## Features
 
 - 🌡️ **Real-time MSLP Data**: Fetches current pressure data from Open-Meteo API
