@@ -2,8 +2,8 @@ import { Location, PressureReading, PressureGradient } from "@/types/location";
 
 /**
  * Calculate pressure difference between home location and comparison location
- * Positive value means home pressure is higher (offshore flow potential)
- * Negative value means home pressure is lower (onshore flow)
+ * Positive value means home pressure is higher (onshore flow potential)
+ * Negative value means home pressure is lower (offshore flow potential)
  */
 export function calculatePressureGradient(
   homeLocation: Location,

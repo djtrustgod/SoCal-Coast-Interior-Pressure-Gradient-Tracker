@@ -103,13 +103,13 @@ export function DashboardContent({
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground space-y-2">
             <p>
-              <strong>Positive values (offshore flow):</strong> Higher pressure
+              <strong>Negative values with Coast as reference (offshore flow):</strong> Higher pressure
               inland creates winds flowing from land to ocean. Common during
               Santa Ana wind events.
             </p>
             <p>
-              <strong>Negative values (onshore flow):</strong> Higher pressure
-              over the ocean creates winds flowing from ocean to land. Typical
+              <strong>Positive values with Coast as reference (onshore flow):</strong> Higher pressure
+              over the coast creates winds flowing from ocean to land. Typical
               during normal conditions.
             </p>
             <p>
