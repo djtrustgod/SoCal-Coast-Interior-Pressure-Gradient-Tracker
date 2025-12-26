@@ -69,8 +69,8 @@ export function PressureTrendChart({
   const colors = {
     text: isDark ? "#e5e7eb" : "#374151",
     grid: isDark ? "#374151" : "#e5e7eb",
-    compareLine: isDark ? "#60a5fa" : "#3b82f6",
-    homeLine: isDark ? "#f97316" : "#ea580c",
+    compareLine: isDark ? "#f97316" : "#ea580c",
+    homeLine: isDark ? "#60a5fa" : "#3b82f6",
     background: isDark ? "#1f2937" : "#ffffff",
   };
 
