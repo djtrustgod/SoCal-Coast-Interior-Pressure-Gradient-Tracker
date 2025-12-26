@@ -5,7 +5,7 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 
 ## Screenshots
 
-![Dashboard with 24-Hour Pressure Trends](docs/dashboard-screenshot.png)
+![Dashboard with 24-Hour Pressure Trends](docs/App-Screenshot.png)
 *Dashboard showing real-time pressure gradients with interactive 24-hour trend charts for comparison locations*
 
 ## Features
