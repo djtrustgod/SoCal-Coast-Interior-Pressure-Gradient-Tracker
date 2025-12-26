@@ -9,8 +9,9 @@ All planned features have been successfully implemented and the application is r
 ### Core Application
 - ✅ **Next.js 16 with App Router** - Modern React framework with TypeScript and Turbopack
 - ✅ **Tailwind CSS + shadcn/ui** - Beautiful, responsive UI with light/dark themes
+- ✅ **Recharts Integration** - Interactive, responsive pressure trend charts with theme support
 - ✅ **JSON-based storage** - Simple, persistent location configuration
-- ✅ **Open-Meteo API integration** - Free weather data, no API key needed
+- ✅ **Open-Meteo API integration** - Free weather data, no API key needed, 24-hour time series data
 - ✅ **Configurable Data Refresh** - User-configurable API refresh interval (1-60 minutes)
 - ✅ **Auto-Refresh Dashboard** - Browser automatically refreshes every 5 minutes
 
@@ -19,10 +20,13 @@ All planned features have been successfully implemented and the application is r
 #### 1. Dashboard (`/`)
 - Displays customizable home location with current MSLP
 - Shows up to 3 user-selected comparison locations with pressure gradients
+- **24-Hour Pressure Trend Charts**: Interactive line graphs showing hourly pressure data for past 24 hours
+- **Dual-Line Charts**: Option to overlay home location pressure on comparison charts for visual gradient analysis
+- **Theme-Aware Charts**: Automatically adapts colors and styling to light/dark mode
 - **Auto-Refresh**: Dashboard automatically refreshes every 5 minutes using `setInterval` and `router.refresh()`
 - **Manual Refresh Button**: On-demand data refresh with spinning animation
 - **Timezone-Aware Timestamps**: All dates/times automatically converted to user's local timezone
-- **Current Hour Data**: Fetches most recent hour data, not just midnight values
+- **24-Hour Time Series Data**: API returns full hourly array (24 data points) from Open-Meteo
 - Color-coded interpretations (offshore/onshore flow)
 - Configurable API data caching (default 5 minutes, user-adjustable 1-60 minutes)
 - Responsive grid layout (2 columns on tablet, 3 on desktop)
@@ -80,7 +84,9 @@ All planned features have been successfully implemented and the application is r
 - **Dashboard Locations**: Santa Barbara, Santa Maria, Daggett (default) - fully configurable via UI (max 3)
 - **API Refresh Interval**: 300 seconds (5 minutes) - configurable from 60 to 3600 seconds
 - **Auto-Refresh**: Dashboard refreshes every 5 minutes (300000ms) automatically
-- **Timestamp Handling**: Fetches current/most recent hour data, timezone-aware display
+- **Timestamp Handling**: Fetches 24-hour time series data, extracts current/most recent hour for display, timezone-aware rendering
+- **Time Series Storage**: Each `PressureReading` includes optional `timeSeries` object with arrays of time/pressure/temperature data
+- **Gradient Time Series**: `PressureGradient` objects include optional `homeTimeSeries` and `compareTimeSeries` for chart rendering
 - **Runtime Data Loading**: Locations read from file system at runtime using `fs.readFile()` instead of static imports, ensuring changes are immediately reflected without rebuild
 
 #### Calculations
@@ -104,7 +110,8 @@ All planned features have been successfully implemented and the application is r
 - Theme Toggle: Light/dark mode
 - Header: Navigation and settings
 - **Dashboard Content**: Client component with refresh functionality
-- **Gradient Card**: Pressure difference visualization with timezone-aware timestamps
+- **Gradient Card**: Pressure difference visualization with timezone-aware timestamps and trend charts
+- **Pressure Trend Chart**: 24-hour line chart component with light/dark theme support, responsive design, dual-line option for home vs. comparison
 - **Edit Location Dialog**: Modal form for editing location details
 
 ### File Structure Created
@@ -129,7 +136,8 @@ All planned features have been successfully implemented and the application is r
 │   │   ├── label.tsx            # Label component
 │   │   └── select.tsx           # Select component
 │   ├── dashboard-content.tsx    # Client component with auto-refresh (5 min interval)
-│   ├── gradient-card.tsx        # Pressure gradient with timestamps
+│   ├── gradient-card.tsx        # Pressure gradient with timestamps and trend chart
+│   ├── pressure-trend-chart.tsx # 24-hour pressure trend line chart with theme support
 │   ├── edit-location-dialog.tsx # Location edit modal
 │   ├── header.tsx               # App header with nav
 │   ├── footer.tsx               # Footer with version, date, license info
@@ -197,7 +205,7 @@ All planned features have been successfully implemented and the application is r
 ### Features
 - next-themes (theme system)
 - zod (validation)
-- recharts (for future charts)
+- recharts (charting library)
 
 ### Dev Tools
 - eslint
@@ -208,33 +216,37 @@ All planned features have been successfully implemented and the application is r
 ### ✅ Working Features
 1. Development server running on http://localhost:3000
 2. Dashboard displays pressure gradients with current hour data
-3. **Auto-refresh dashboard every 5 minutes** using useEffect and setInterval
-4. **Manual refresh button with spinning animation**
-5. **Configurable API refresh interval** (1, 5, 10, 15, 30, 60 minutes) in Settings UI
-6. **Dynamic revalidation** based on user-configured apiRefreshInterval setting
-7. **Timezone-aware timestamp display** (e.g., "Dec 6, 2025, 8:00 PM PST")
-8. **Set home location from Settings UI** with confirmation dialog
-9. **Select up to 3 dashboard locations** with Eye/EyeOff toggle buttons
-10. **Edit location details** via pencil icon and modal dialog
-11. **Visual badges** for HOME and DASHBOARD locations
-12. Theme toggle (light/dark) functional
-13. Location management page with full CRUD operations
-14. API endpoints responding correctly (GET/POST/PATCH/PUT/DELETE)
-15. Data fetching from Open-Meteo API with proper hour selection
-16. JSON storage working with homeLocationId, dashboardLocationIds, and apiRefreshInterval
-17. Responsive design implemented
-18. Automatic removal of deleted locations from dashboard list
-19. API refresh interval validation (60-3600 seconds)
+3. **24-hour pressure trend charts** for each comparison location with interactive tooltips
+4. **Dual-line charts** showing both home and comparison location trends for visual gradient analysis
+5. **Theme-aware charts** automatically adapt to light/dark mode with appropriate colors
+6. **Auto-refresh dashboard every 5 minutes** using useEffect and setInterval
+7. **Manual refresh button with spinning animation**
+8. **Configurable API refresh interval** (1, 5, 10, 15, 30, 60 minutes) in Settings UI
+9. **Dynamic revalidation** based on user-configured apiRefreshInterval setting
+10. **Timezone-aware timestamp display** (e.g., "Dec 6, 2025, 8:00 PM PST") including chart X-axis
+11. **Time series data collection** - API returns full 24-hour hourly arrays
+12. **Set home location from Settings UI** with confirmation dialog
+13. **Select up to 3 dashboard locations** with Eye/EyeOff toggle buttons
+14. **Edit location details** via pencil icon and modal dialog
+15. **Visual badges** for HOME and DASHBOARD locations
+16. Theme toggle (light/dark) functional
+17. Location management page with full CRUD operations
+18. API endpoints responding correctly (GET/POST/PATCH/PUT/DELETE)
+19. Data fetching from Open-Meteo API with proper hour selection and time series
+20. JSON storage working with homeLocationId, dashboardLocationIds, and apiRefreshInterval
+21. Responsive design implemented including chart responsiveness
+22. Automatic removal of deleted locations from dashboard list
+23. API refresh interval validation (60-3600 seconds)
 
 ### 🔄 Future Enhancements (Not Required)
-1. Historical pressure trend charts with Recharts
-2. Export data functionality (CSV/JSON)
-3. Weather alerts/notifications
-4. Mobile app version
-5. User accounts and preferences
-6. Multiple saved dashboard configurations
-7. Wind speed/direction overlay
-8. Pressure trend indicators (rising/falling)
+1. Export data functionality (CSV/JSON)
+2. Weather alerts/notifications
+3. Mobile app version
+4. User accounts and preferences
+5. Multiple saved dashboard configurations
+6. Wind speed/direction overlay
+7. Pressure trend indicators (rising/falling)
+8. Extended historical data (7-day, 30-day trends)
 
 ## Testing Checklist
 

@@ -7,6 +7,7 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 
 - 🌡️ **Real-time MSLP Data**: Fetches current pressure data from Open-Meteo API
 - 📊 **Pressure Gradient Visualization**: Displays pressure differences between home location and up to 3 comparison locations
+- 📈 **24-Hour Pressure Trend Graphs**: Interactive line charts showing pressure trends over the past 24 hours for each location
 - 🎨 **Modern UI**: Clean, responsive design with light/dark theme support
 - 📍 **24 Pre-configured Locations**: Includes major coastal and interior SoCal locations
 - ⚙️ **Location Management**: Add, edit, and delete locations (max 25)
@@ -25,6 +26,7 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui (Radix UI primitives)
+- **Charts**: Recharts (responsive charting library)
 - **Data Source**: Open-Meteo API (free, no API key required)
 - **Icons**: Lucide React
 - **Theme**: next-themes (light/dark mode)
@@ -63,6 +65,7 @@ npm run dev
 The main dashboard displays:
 - Current MSLP for the home location (customizable)
 - Pressure gradients for up to 3 comparison locations (customizable)
+- **24-hour pressure trend graphs** for each comparison location showing hourly data
 - Color-coded interpretations (offshore flow, onshore flow, neutral)
 - Last update timestamps in your local timezone (e.g., "Dec 6, 2025, 8:00 PM PST")
 - Manual refresh button to fetch the latest data on-demand
@@ -102,7 +105,8 @@ Navigate to the Settings (gear icon) to:
 ├── components/
 │   ├── ui/                  # shadcn/ui components (Button, Card, Dialog, Select)
 │   ├── dashboard-content.tsx # Client component with refresh functionality
-│   ├── gradient-card.tsx    # Pressure gradient display card with timestamps
+│   ├── gradient-card.tsx    # Pressure gradient display card with timestamps and charts
+│   ├── pressure-trend-chart.tsx # 24-hour pressure trend chart with theme support
 │   ├── edit-location-dialog.tsx # Dialog for editing location details
 │   ├── header.tsx           # App header with navigation
 │   ├── location-selector.tsx # Location comparison selector (unused)

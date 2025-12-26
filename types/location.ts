@@ -13,6 +13,11 @@ export interface PressureReading {
   timestamp: string;
   pressure: number; // in hPa
   temperature?: number; // in Celsius
+  timeSeries?: {
+    time: string[];
+    pressure: number[];
+    temperature?: number[];
+  };
 }
 
 export interface PressureGradient {
@@ -22,6 +27,14 @@ export interface PressureGradient {
   comparePressure: number;
   difference: number; // home - compare
   timestamp: string;
+  homeTimeSeries?: {
+    time: string[];
+    pressure: number[];
+  };
+  compareTimeSeries?: {
+    time: string[];
+    pressure: number[];
+  };
 }
 
 export interface LocationSettings {

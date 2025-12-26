@@ -12,6 +12,7 @@ import {
   interpretGradient,
 } from "@/lib/calculations/gradient";
 import { ArrowUpRight, ArrowDownRight, Minus } from "lucide-react";
+import { PressureTrendChart } from "@/components/pressure-trend-chart";
 
 interface GradientCardProps {
   gradient: PressureGradient;
@@ -76,6 +77,15 @@ export function GradientCard({ gradient }: GradientCardProps) {
             timeZoneName: 'short'
           })}
         </div>
+        
+        {gradient.compareTimeSeries && (
+          <PressureTrendChart
+            compareTimeSeries={gradient.compareTimeSeries}
+            homeTimeSeries={gradient.homeTimeSeries}
+            locationName={gradient.compareLocation.name}
+            homeLocationName={gradient.homeLocation.name}
+          />
+        )}
       </CardContent>
     </Card>
   );

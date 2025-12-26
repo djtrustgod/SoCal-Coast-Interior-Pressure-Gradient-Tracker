@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.0] - 2025-12-26
+
+### Added
+- 24-hour pressure trend graphs for each comparison location on dashboard
+- Interactive line charts using Recharts library with responsive design
+- Light and dark mode theme support for charts
+- Time series data collection from Open-Meteo API (24 hourly data points)
+- Dual-line chart option showing both home and comparison location pressure trends
+- Timezone-aware X-axis labels (12-hour format with AM/PM)
+- Chart tooltips with formatted pressure values and timestamps
+- New `PressureTrendChart` component with theme-aware styling
+
+### Changed
+- Open-Meteo API client now returns full 24-hour time series data instead of only current hour
+- `PressureReading` interface updated to include optional `timeSeries` object
+- `PressureGradient` interface updated to include optional `homeTimeSeries` and `compareTimeSeries` objects
+- Gradient calculation functions now pass through time series data
+- Dashboard cards expanded to display trend charts below pressure data
+- Chart container now uses explicit height values to prevent Recharts dimension warnings
+
+### Dependencies
+- Added Recharts (^3.6.0) for charting functionality
+
 ## [1.1.0] - 2025-12-13
 
 ### Fixed

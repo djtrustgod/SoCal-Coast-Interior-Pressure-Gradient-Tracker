@@ -70,6 +70,11 @@ export async function fetchMSLPForLocation(
     timestamp,
     pressure,
     temperature,
+    timeSeries: {
+      time: data.hourly.time,
+      pressure: data.hourly.pressure_msl,
+      temperature: data.hourly.temperature_2m,
+    },
   };
 }
 

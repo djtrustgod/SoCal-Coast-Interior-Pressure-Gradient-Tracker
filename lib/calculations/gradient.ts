@@ -20,6 +20,14 @@ export function calculatePressureGradient(
     comparePressure: comparePressure.pressure,
     difference,
     timestamp: homePressure.timestamp,
+    homeTimeSeries: homePressure.timeSeries ? {
+      time: homePressure.timeSeries.time,
+      pressure: homePressure.timeSeries.pressure,
+    } : undefined,
+    compareTimeSeries: comparePressure.timeSeries ? {
+      time: comparePressure.timeSeries.time,
+      pressure: comparePressure.timeSeries.pressure,
+    } : undefined,
   };
 }
 

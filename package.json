@@ -1,6 +1,6 @@
 {
   "name": "socal-coast-interior-pressure-gradient-tracker",
-  "version": "1.1.0",
+  "version": "1.5.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "next-themes": "^0.4.6",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
-    "recharts": "^3.5.1",
+    "recharts": "^3.6.0",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.1.13"
   },
