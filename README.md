@@ -1,6 +1,5 @@
 # SoCal Coast-Interior Pressure Gradient Tracker 🍃
 
-
 A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP) differences between coastal and interior Southern California locations. This tool helps visualize pressure gradients that indicate offshore vs. onshore wind patterns.
 
 ## Screenshots
@@ -40,14 +39,14 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - npm or yarn
 
 ### Installation
 
 1. Clone the repository:
 \`\`\`
-git clone https://github.com/djtrustgod/SoCal-Coast-Interior-Pressure-Gradient-Tracker.git
+git clone <https://github.com/djtrustgod/SoCal-Coast-Interior-Pressure-Gradient-Tracker.git>
 cd SoCal-Coast-Interior-Pressure-Gradient-Tracker
 \`\`\`
 
@@ -68,6 +67,7 @@ npm run dev
 ### Dashboard
 
 The main dashboard displays:
+
 - Current MSLP for the home location (customizable)
 - Pressure gradients for up to 3 comparison locations (customizable)
 - **24-hour pressure trend graphs** for each comparison location showing hourly data
@@ -86,6 +86,7 @@ The main dashboard displays:
 ### Location Management
 
 Navigate to the Settings (gear icon) to:
+
 - View all configured locations (coastal vs. interior)
 - **Set Home Location**: Click the home icon next to any location to set it as your home base
 - **Select Dashboard Locations**: Click the eye icon to add/remove locations from dashboard display (max 3)
@@ -135,9 +136,11 @@ Navigate to the Settings (gear icon) to:
 ## API Endpoints
 
 ### GET /api/pressure
+
 Fetch MSLP data for specified locations.
 
 **Query Parameters:**
+
 - `ids`: Comma-separated location IDs
 
 **Example:**
@@ -146,6 +149,7 @@ GET /api/pressure?ids=sna,sba,dag
 \`\`\`
 
 ### GET /api/locations
+
 Get all configured locations, home location ID, and dashboard location IDs.
 
 **Response:**
@@ -158,6 +162,7 @@ Get all configured locations, home location ID, and dashboard location IDs.
 \`\`\`
 
 ### POST /api/locations
+
 Add a new location.
 
 **Body:**
@@ -174,6 +179,7 @@ Add a new location.
 \`\`\`
 
 ### PATCH /api/locations
+
 Update home location, dashboard location selections, or API refresh interval.
 
 **Body (Set Home):**
@@ -199,6 +205,7 @@ Update home location, dashboard location selections, or API refresh interval.
 *Note: Value in seconds, minimum 60, maximum 3600*
 
 ### PUT /api/locations
+
 Update an existing location's details.
 
 **Body:**
@@ -215,6 +222,7 @@ Update an existing location's details.
 \`\`\`
 
 ### DELETE /api/locations?id=location-id
+
 Delete a location (cannot delete home location or locations in dashboard).
 
 ## Configuration
@@ -222,6 +230,7 @@ Delete a location (cannot delete home location or locations in dashboard).
 ### Changing the Home Location
 
 **Via UI (Recommended):**
+
 1. Navigate to Settings (gear icon)
 2. Find the location you want to set as home
 3. Click the home icon next to that location
@@ -280,12 +289,15 @@ The application can be deployed using Docker for easy containerized deployment.
 ### Quick Start with Docker Compose
 
 #### Build and start the container
+
 docker-compose up -d
 
 #### View logs
+
 docker-compose logs -f
 
 #### Stop the container
+
 docker-compose down
 
 The app will be available at `http://localhost:3000`.
@@ -293,9 +305,11 @@ The app will be available at `http://localhost:3000`.
 ### Using Docker Directly
 
 #### Build the image
+
 docker build -t socal-pressure-tracker .
 
 #### Run the container with data persistence
+
 docker run -d \\
   --name socal-pressure-tracker \\
   -p 3000:3000 \\
@@ -303,25 +317,27 @@ docker run -d \\
   socal-pressure-tracker
 
 #### View logs
+
 docker logs -f socal-pressure-tracker
 
 #### Stop and remove
+
 docker stop socal-pressure-tracker
 docker rm socal-pressure-tracker
-
 
 ### Upgrading from Previous Docker Versions
 
 If you have an existing Docker deployment and want to upgrade to the latest version:
 
-
 #### Using Docker Compose (Recommended)
+
 docker-compose down                    # Stop the current container
 docker-compose pull                     # Pull latest image (if using pre-built)
 docker-compose build --no-cache        # Rebuild with latest code
 docker-compose up -d                   # Start with new image
 
 #### Using Docker Directly
+
 docker stop socal-pressure-tracker     # Stop the container
 docker rm socal-pressure-tracker       # Remove the container
 docker rmi socal-pressure-tracker      # Remove old image
@@ -333,9 +349,9 @@ docker run -d \\
   socal-pressure-tracker
 
 #### Verify the upgrade
+
 docker ps                               # Check container is running
 docker logs socal-pressure-tracker     # View startup logs
-
 
 ⚠️ **Important**: Your data in the `./data` directory will be preserved during the upgrade as long as you use the same volume mount.
 
