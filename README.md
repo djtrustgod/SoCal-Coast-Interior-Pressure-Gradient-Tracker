@@ -259,11 +259,67 @@ Either use the UI or manually edit `data/locations.json`:
 
 ## Building for Production
 
+### Standard Build
+
+\`\`\`bash
 npm run build
-
 npm run start
+\`\`\`
 
-The NextJS app runs on `http://localhost:3000` by default.
+The Next.js app runs on `http://localhost:3000` by default.
+
+### Docker Deployment
+
+The application can be deployed using Docker for easy containerized deployment.
+
+#### Prerequisites
+
+- Docker Desktop installed
+- Docker Compose (recommended)
+
+#### Quick Start with Docker Compose
+
+\`\`\`bash
+# Build and start the container
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the container
+docker-compose down
+\`\`\`
+
+The app will be available at `http://localhost:3000`.
+
+#### Using Docker Directly
+
+\`\`\`bash
+# Build the image
+docker build -t socal-pressure-tracker .
+
+# Run the container with data persistence
+docker run -d \\
+  --name socal-pressure-tracker \\
+  -p 3000:3000 \\
+  -v $(pwd)/data:/app/data \\
+  socal-pressure-tracker
+
+# View logs
+docker logs -f socal-pressure-tracker
+
+# Stop and remove
+docker stop socal-pressure-tracker
+docker rm socal-pressure-tracker
+\`\`\`
+
+#### Important Notes
+
+⚠️ **Data Persistence**: The `-v ./data:/app/data` volume mount is **critical** for persisting location configuration changes. Without it, any changes made through the UI will be lost when the container restarts.
+
+**Port Configuration**: To use a different port, change the mapping: `-p 8080:3000` maps host port 8080 to container port 3000.
+
+**Network Requirements**: The container needs outbound internet access to reach the Open-Meteo API.
 
 ## Contributing
 

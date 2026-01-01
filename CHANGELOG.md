@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-01-01
+
+### Added
+- Docker support for containerized deployment
+- Multi-stage Dockerfile for optimized production builds
+- Docker Compose configuration with health checks and automatic restarts
+- Volume mounting for persistent data storage
+- `.dockerignore` file for efficient Docker builds
+
+### Changed
+- Next.js config updated with `output: 'standalone'` for Docker optimization
+- README.md expanded with comprehensive Docker deployment instructions
+
 ## [1.5.0] - 2025-12-26
 
 ### Added

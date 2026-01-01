@@ -272,7 +272,7 @@ After running the container, verify:
 | `next.config.js` | Add `output: 'standalone'` |
 | `README.md` | Add Docker usage section |
 | `CHANGELOG.md` | Document Docker support addition |
-
+| '.github\copilot-instructions.md' | Update instructions to include Docker packaging steps |
 ---
 
 ## Estimated Time
