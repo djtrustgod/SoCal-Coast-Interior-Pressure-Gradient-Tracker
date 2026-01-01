@@ -3,14 +3,23 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      # Use build cache for faster rebuilds
+      args:
+        - NODE_ENV=production
+    image: socal-pressure-tracker:latest
     container_name: socal-pressure-tracker
     ports:
       - "3000:3000"
     volumes:
       # CRITICAL: Mount data directory for persistence
+      # This preserves location configurations across container restarts
       - ./data:/app/data
     environment:
       - NODE_ENV=production
+      - PORT=3000
+      - HOSTNAME=0.0.0.0
+      # Optional: Customize timezone for log timestamps
+      - TZ=America/Los_Angeles
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/locations', (r) => process.exit(r.statusCode === 200 ? 0 : 1))"]
@@ -18,3 +27,18 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"

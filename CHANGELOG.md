@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- Dockerfile improved with better layer caching and libc6-compat for Alpine Linux
+- Docker image now includes embedded health checks for better monitoring
+- Docker Compose configuration enhanced with resource limits and logging rotation
+- `.dockerignore` expanded to exclude more unnecessary files for faster builds
+- IMPLEMENTATION.md updated with Docker deployment section and version 1.5.1
+
+### Improved
+- Multi-stage Docker build optimized for faster builds with better caching
+- Production Docker image size reduced to ~235MB
+- Security hardened with non-root user (nextjs:nodejs) and proper file permissions
+- Data directory initialization improved to work with and without volume mounts
+- Environment variables expanded (HOSTNAME, TZ for timezone support)
+
 ## [1.5.1] - 2026-01-01
 
 ### Added

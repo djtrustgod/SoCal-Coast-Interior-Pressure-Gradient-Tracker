@@ -237,6 +237,9 @@ All planned features have been successfully implemented and the application is r
 21. Responsive design implemented including chart responsiveness
 22. Automatic removal of deleted locations from dashboard list
 23. API refresh interval validation (60-3600 seconds)
+24. **Docker containerized deployment** with multi-stage builds and health checks
+25. **Volume mounting** for persistent data across container restarts
+26. **Production-optimized Docker image** (~235MB with security hardening)
 
 ### 🔄 Future Enhancements (Not Required)
 1. Export data functionality (CSV/JSON)
@@ -297,7 +300,33 @@ The application is ready for:
 - ✅ Local development
 - ✅ Production build (`npm run build`)
 - ✅ Local server deployment (`npm start`)
+- ✅ Docker containerized deployment
 - 🔄 Cloud deployment (Vercel, Netlify, etc.) - requires minor config
+
+### Docker Deployment
+
+**Docker Configuration**:
+- Multi-stage Dockerfile for optimized builds
+- Production image size: ~235MB
+- Health checks included
+- Data volume mounting for persistence
+- Security: Non-root user (nextjs:nodejs)
+- Resource limits configured
+- Logging with rotation
+
+**Files**:
+- `Dockerfile`: Multi-stage build (deps → builder → runner)
+- `docker-compose.yml`: Complete orchestration with health checks
+- `.dockerignore`: Optimized build context
+
+**Key Features**:
+- Next.js standalone output mode for Docker optimization
+- Automated health checks every 30 seconds
+- Volume mounting for persistent location data
+- Environment variable configuration
+- Timezone support (America/Los_Angeles default)
+- Resource limits (512MB memory, 1 CPU)
+- Log rotation (10MB max, 3 files)
 
 ## Success Criteria Met
 
@@ -334,6 +363,6 @@ The application is ready for:
 **Project Status**: ✅ COMPLETE AND FULLY FEATURED
 **Build Time**: Initial ~15 minutes + Enhancements ~3 hours
 **Lines of Code**: ~3,700+
-**Technologies**: Next.js 16.0.7 (Turbopack), React 19, TypeScript, Tailwind CSS, shadcn/ui, Open-Meteo API
-**Version**: 1.0.2
-**Last Updated**: December 7, 2025
+**Technologies**: Next.js 16.0.7 (Turbopack), React 19, TypeScript, Tailwind CSS, shadcn/ui, Open-Meteo API, Docker
+**Version**: 1.5.1
+**Last Updated**: January 1, 2026
