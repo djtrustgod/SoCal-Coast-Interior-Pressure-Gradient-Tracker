@@ -277,54 +277,51 @@ The application can be deployed using Docker for easy containerized deployment.
 - Docker Desktop installed
 - Docker Compose (recommended)
 
-#### Quick Start with Docker Compose
+### Quick Start with Docker Compose
 
-\`\`\`bash
-# Build and start the container
+#### Build and start the container
 docker-compose up -d
 
-# View logs
+#### View logs
 docker-compose logs -f
 
-# Stop the container
+#### Stop the container
 docker-compose down
-\`\`\`
 
 The app will be available at `http://localhost:3000`.
 
-#### Using Docker Directly
+### Using Docker Directly
 
-\`\`\`bash
-# Build the image
+#### Build the image
 docker build -t socal-pressure-tracker .
 
-# Run the container with data persistence
+#### Run the container with data persistence
 docker run -d \\
   --name socal-pressure-tracker \\
   -p 3000:3000 \\
   -v $(pwd)/data:/app/data \\
   socal-pressure-tracker
 
-# View logs
+#### View logs
 docker logs -f socal-pressure-tracker
 
-# Stop and remove
+#### Stop and remove
 docker stop socal-pressure-tracker
 docker rm socal-pressure-tracker
-\`\`\`
 
-#### Upgrading from Previous Docker Versions
+
+### Upgrading from Previous Docker Versions
 
 If you have an existing Docker deployment and want to upgrade to the latest version:
 
-\`\`\`bash
-# Using Docker Compose (Recommended)
+
+#### Using Docker Compose (Recommended)
 docker-compose down                    # Stop the current container
 docker-compose pull                     # Pull latest image (if using pre-built)
 docker-compose build --no-cache        # Rebuild with latest code
 docker-compose up -d                   # Start with new image
 
-# Using Docker Directly
+#### Using Docker Directly
 docker stop socal-pressure-tracker     # Stop the container
 docker rm socal-pressure-tracker       # Remove the container
 docker rmi socal-pressure-tracker      # Remove old image
@@ -335,10 +332,10 @@ docker run -d \\
   -v $(pwd)/data:/app/data \\
   socal-pressure-tracker
 
-# Verify the upgrade
+#### Verify the upgrade
 docker ps                               # Check container is running
 docker logs socal-pressure-tracker     # View startup logs
-\`\`\`
+
 
 ⚠️ **Important**: Your data in the `./data` directory will be preserved during the upgrade as long as you use the same volume mount.
 
