@@ -313,6 +313,35 @@ docker stop socal-pressure-tracker
 docker rm socal-pressure-tracker
 \`\`\`
 
+#### Upgrading from Previous Docker Versions
+
+If you have an existing Docker deployment and want to upgrade to the latest version:
+
+\`\`\`bash
+# Using Docker Compose (Recommended)
+docker-compose down                    # Stop the current container
+docker-compose pull                     # Pull latest image (if using pre-built)
+docker-compose build --no-cache        # Rebuild with latest code
+docker-compose up -d                   # Start with new image
+
+# Using Docker Directly
+docker stop socal-pressure-tracker     # Stop the container
+docker rm socal-pressure-tracker       # Remove the container
+docker rmi socal-pressure-tracker      # Remove old image
+docker build -t socal-pressure-tracker . # Rebuild image
+docker run -d \\
+  --name socal-pressure-tracker \\
+  -p 3000:3000 \\
+  -v $(pwd)/data:/app/data \\
+  socal-pressure-tracker
+
+# Verify the upgrade
+docker ps                               # Check container is running
+docker logs socal-pressure-tracker     # View startup logs
+\`\`\`
+
+⚠️ **Important**: Your data in the `./data` directory will be preserved during the upgrade as long as you use the same volume mount.
+
 #### Important Notes
 
 ⚠️ **Data Persistence**: The `-v ./data:/app/data` volume mount is **critical** for persisting location configuration changes. Without it, any changes made through the UI will be lost when the container restarts.
