@@ -47,60 +47,17 @@ npx release-it
 
 ---
 
+---
+
 ## Implementation Steps
 
 ### Phase 1: Git Hooks with Husky
 
-1. **Install Husky**
-   ```bash
-   npm install -D husky
-   npx husky init
-   ```
-
-2. **Create post-commit hook** (`.husky/post-commit`)
-   - Prompts user: "Rebuild Docker image? (y/n)"
-   - If yes, runs `npm run docker:rebuild`
-   - ~10 lines of shell script
-
-3. **Husky auto-setup** — Add to `package.json`:
-   ```json
-   {
-     "scripts": {
-       "prepare": "husky"
-     }
-   }
-   ```
+See **Updated Implementation Steps (Windows-Optimized)** section below for Windows-compatible instructions.
 
 ### Phase 2: Docker Convenience Scripts
 
-4. **Add npm scripts** to `package.json`:
-   ```json
-   {
-     "scripts": {
-       "docker:build": "docker-compose build",
-       "docker:up": "docker-compose up -d",
-       "docker:down": "docker-compose down",
-       "docker:rebuild": "docker-compose down && docker-compose build && docker-compose up -d",
-       "docker:logs": "docker-compose logs -f",
-       "docker:clean": "docker-compose down && docker-compose build --no-cache && docker-compose up -d"
-     }
-   }
-   ```
-
-5. **Optional: Docker Compose Watch** — Add to `docker-compose.yml` for auto-rebuild on file changes:
-   ```yaml
-   services:
-     pressure-tracker:
-       develop:
-         watch:
-           - action: rebuild
-             path: .
-             ignore:
-               - node_modules/
-               - .git/
-               - .husky/
-   ```
-   Usage: `docker compose watch`
+See **Updated Implementation Steps (Windows-Optimized)** section below for cross-platform npm scripts.
 
 ### Phase 3: Release Automation with release-it
 
@@ -221,13 +178,169 @@ scripts/
 ## Prerequisites
 
 - **Node.js** — Required for Husky and release-it
-- **Docker & Docker Compose** — For container management
+- **Docker Desktop for Windows** — Includes Docker Engine and Docker Compose v2
 - **GitHub CLI (`gh`)** — Optional, release-it can use GitHub API directly with token
-- **Git** — For version control and hooks
+- **Git for Windows** — Includes Git Bash for running Husky shell hooks
+- **WSL2 Backend** — Recommended for Docker Desktop on Windows (better performance)
 
 ---
 
-## Further Considerations
+## Windows Compatibility Notes
+
+### Docker Compose on Windows
+
+The plan uses **Docker Compose v2** (the `docker compose` plugin syntax, not legacy `docker-compose`). Docker Desktop for Windows includes this by default.
+
+| Syntax | Version | Windows Support |
+|--------|---------|-----------------|
+| `docker compose` | v2 (plugin) | ✅ Recommended |
+| `docker-compose` | v1 (standalone) | ⚠️ Legacy, may not be installed |
+
+### npm Scripts for Cross-Platform
+
+The `&&` operator works differently across shells:
+- **PowerShell**: ✅ Works
+- **cmd.exe**: ⚠️ May fail silently on first command error
+- **Git Bash**: ✅ Works
+
+**Solution**: Use `npm-run-all` for reliable cross-platform script chaining:
+
+```bash
+npm install -D npm-run-all
+```
+
+Updated npm scripts:
+```json
+{
+  "scripts": {
+    "docker:build": "docker compose build",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down",
+    "docker:rebuild": "npm-run-all docker:down docker:build docker:up",
+    "docker:logs": "docker compose logs -f",
+    "docker:clean": "docker compose down && docker compose build --no-cache && docker compose up -d"
+  }
+}
+```
+
+### Husky on Windows
+
+Husky hooks are shell scripts that run via **Git Bash** (installed with Git for Windows). This works automatically because:
+1. Git for Windows includes Git Bash
+2. Git executes hooks using the shebang (`#!/bin/sh`)
+3. Husky v9+ is designed for cross-platform compatibility
+
+**Important**: The `.husky/post-commit` hook must use POSIX shell syntax, not PowerShell.
+
+Example Windows-compatible hook:
+```sh
+#!/bin/sh
+
+# Check if running interactively (has a TTY)
+if [ -t 0 ]; then
+  exec < /dev/tty
+  echo ""
+  printf "Rebuild Docker image? (y/n): "
+  read -r answer
+  if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+    npm run docker:rebuild
+  fi
+fi
+```
+
+### Volume Mounts on Windows
+
+Your current `docker-compose.yml` uses relative paths which work correctly:
+```yaml
+volumes:
+  - ./data:/app/data
+```
+
+This works on Windows because:
+- Docker Desktop translates Windows paths automatically
+- WSL2 backend handles path conversion
+
+**Avoid**: Absolute Windows paths like `C:\Users\...` in docker-compose.yml
+
+### Docker Compose Watch on Windows
+
+Docker Compose Watch (`docker compose watch`) works on Windows with Docker Desktop 4.24+. However, file system events may be slightly delayed compared to Linux due to WSL2 file system bridging.
+
+---
+
+## Updated Implementation Steps (Windows-Optimized)
+
+### Phase 1: Git Hooks with Husky
+
+1. **Install Husky**
+   ```powershell
+   npm install -D husky
+   npx husky init
+   ```
+
+2. **Create post-commit hook** (`.husky/post-commit`) — POSIX shell syntax for Git Bash:
+   ```sh
+   #!/bin/sh
+   
+   # Only prompt if running interactively
+   if [ -t 0 ]; then
+     exec < /dev/tty
+     echo ""
+     printf "Rebuild Docker image? (y/n): "
+     read -r answer
+     if [ "$answer" = "y" ] || [ "$answer" = "Y" ]; then
+       npm run docker:rebuild
+     fi
+   fi
+   ```
+
+3. **Husky auto-setup** — Add to `package.json`:
+   ```json
+   {
+     "scripts": {
+       "prepare": "husky"
+     }
+   }
+   ```
+
+### Phase 2: Docker Convenience Scripts (Cross-Platform)
+
+4. **Install npm-run-all** for reliable script chaining:
+   ```powershell
+   npm install -D npm-run-all
+   ```
+
+5. **Add npm scripts** to `package.json`:
+   ```json
+   {
+     "scripts": {
+       "docker:build": "docker compose build",
+       "docker:up": "docker compose up -d",
+       "docker:down": "docker compose down",
+       "docker:rebuild": "npm-run-all docker:down docker:build docker:up",
+       "docker:logs": "docker compose logs -f",
+       "docker:clean": "npm-run-all docker:down \"docker:build -- --no-cache\" docker:up",
+       "docker:watch": "docker compose watch"
+     }
+   }
+   ```
+
+6. **Optional: Docker Compose Watch** — Add to `docker-compose.yml`:
+   ```yaml
+   services:
+     pressure-tracker:
+       develop:
+         watch:
+           - action: rebuild
+             path: .
+             ignore:
+               - node_modules/
+               - .git/
+               - .husky/
+               - data/
+   ```
+
+---
 
 1. **Conventional Commits?** — release-it works best with conventional commit messages (`feat:`, `fix:`, `chore:`). Consider adding commitlint for enforcement.
 
