@@ -332,7 +332,6 @@ If you have an existing Docker deployment and want to upgrade to the latest vers
 #### Using Docker Compose (Recommended)
 
 docker-compose down                    # Stop the current container
-docker-compose pull                     # Pull latest image (if using pre-built)
 docker-compose build --no-cache        # Rebuild with latest code
 docker-compose up -d                   # Start with new image
 
