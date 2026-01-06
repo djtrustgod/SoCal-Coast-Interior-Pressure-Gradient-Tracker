@@ -26,6 +26,7 @@ interface EditLocationDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (location: Location) => Promise<void>;
+  mode?: "edit" | "add";
 }
 
 export function EditLocationDialog({
@@ -33,6 +34,7 @@ export function EditLocationDialog({
   open,
   onOpenChange,
   onSave,
+  mode = "edit",
 }: EditLocationDialogProps) {
   const [formData, setFormData] = useState<Location | null>(location);
   const [saving, setSaving] = useState(false);
@@ -93,9 +95,12 @@ export function EditLocationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Edit Location</DialogTitle>
+          <DialogTitle>{mode === "add" ? "Add New Location" : "Edit Location"}</DialogTitle>
           <DialogDescription>
-            Update the location details below. Click save when you're done.
+            {mode === "add" 
+              ? "Enter the details for the new location below. Click save when you're done."
+              : "Update the location details below. Click save when you're done."
+            }
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">

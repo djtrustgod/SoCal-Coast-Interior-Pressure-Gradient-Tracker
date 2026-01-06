@@ -30,6 +30,7 @@ export default function LocationsPage() {
   const [loading, setLoading] = useState(true);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [showDebug, setShowDebug] = useState(false);
   const [debugData, setDebugData] = useState<any>(null);
   const [debugLoading, setDebugLoading] = useState(false);
@@ -52,6 +53,42 @@ export default function LocationsPage() {
       console.error("Error fetching locations:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAdd = () => {
+    // Create a blank location template
+    const newLocation: Location = {
+      id: "",
+      name: "",
+      code: "",
+      latitude: 0,
+      longitude: 0,
+      type: "coast",
+    };
+    setEditingLocation(newLocation);
+    setIsAddDialogOpen(true);
+  };
+
+  const handleSaveAdd = async (newLocation: Location) => {
+    try {
+      const response = await fetch("/api/locations", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newLocation),
+      });
+
+      if (response.ok) {
+        await fetchLocations();
+      } else {
+        const error = await response.json();
+        throw new Error(error.error || "Failed to add location");
+      }
+    } catch (error) {
+      console.error("Error adding location:", error);
+      throw error;
     }
   };
 
@@ -237,7 +274,10 @@ export default function LocationsPage() {
               {locations.length} of 25 locations configured
             </p>
           </div>
-          <Button disabled={locations.length >= 25}>
+          <Button 
+            disabled={locations.length >= 25}
+            onClick={handleAdd}
+          >
             <Plus className="mr-2 h-4 w-4" />
             Add Location
           </Button>
@@ -429,6 +469,16 @@ export default function LocationsPage() {
           onOpenChange={setIsEditDialogOpen}
           onSave={handleSaveEdit}
         />
+
+        {isAddDialogOpen && editingLocation && (
+          <EditLocationDialog
+            location={editingLocation}
+            open={isAddDialogOpen}
+            onOpenChange={setIsAddDialogOpen}
+            onSave={handleSaveAdd}
+            mode="add"
+          />
+        )}
 
         <div className="grid gap-6 md:grid-cols-2 mb-6">
           <Card>

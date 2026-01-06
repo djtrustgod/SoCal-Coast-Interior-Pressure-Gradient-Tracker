@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.2] - 2026-01-05
+
+### Fixed
+- Add Location button in Settings now properly opens a dialog to create new locations
+- EditLocationDialog now supports both "add" and "edit" modes with appropriate titles
+
 ### Changed
 - Dockerfile improved with better layer caching and libc6-compat for Alpine Linux
 - Docker image now includes embedded health checks for better monitoring

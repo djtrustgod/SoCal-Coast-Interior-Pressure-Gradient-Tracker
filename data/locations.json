@@ -190,15 +190,6 @@
       "elevation": 348
     },
     {
-      "id": "mry",
-      "name": "Monterey",
-      "code": "MRY",
-      "latitude": 36.5874,
-      "longitude": -121.843,
-      "type": "coast",
-      "elevation": 78
-    },
-    {
       "id": "sjc",
       "name": "San Jose",
       "code": "SJC",
