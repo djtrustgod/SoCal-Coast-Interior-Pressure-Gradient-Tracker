@@ -1,0 +1,103 @@
+name: Create GitHub Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release (e.g., v1.5.3). Leave empty to use version from package.json'
+        required: false
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      
+      - name: Get version from package.json
+        id: get_version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="v$(node -p "require('./package.json').version")"
+          fi
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION_NUMBER=${VERSION#v}" >> $GITHUB_OUTPUT
+      
+      - name: Check if release notes exist
+        id: check_notes
+        run: |
+          if [ -f "RELEASE_NOTES_${{ steps.get_version.outputs.VERSION }}.md" ]; then
+            echo "NOTES_EXIST=true" >> $GITHUB_OUTPUT
+            echo "Release notes file found: RELEASE_NOTES_${{ steps.get_version.outputs.VERSION }}.md"
+          else
+            echo "NOTES_EXIST=false" >> $GITHUB_OUTPUT
+            echo "Warning: Release notes file not found: RELEASE_NOTES_${{ steps.get_version.outputs.VERSION }}.md"
+          fi
+      
+      - name: Extract release notes
+        id: extract_notes
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          VERSION_NUMBER="${{ steps.get_version.outputs.VERSION_NUMBER }}"
+          
+          if [ "${{ steps.check_notes.outputs.NOTES_EXIST }}" == "true" ]; then
+            # Use dedicated release notes file
+            cat RELEASE_NOTES_${VERSION}.md > release_body.md
+          else
+            # Extract from CHANGELOG.md
+            echo "Extracting release notes from CHANGELOG.md for version $VERSION_NUMBER"
+            
+            # Extract the section for this version from CHANGELOG.md
+            awk "/## \[$VERSION_NUMBER\]/,/## \[/" CHANGELOG.md | \
+              sed '/## \[/d' | \
+              sed '/^$/N;/^\n$/D' > release_body.md
+            
+            # Add footer
+            echo "" >> release_body.md
+            echo "---" >> release_body.md
+            echo "" >> release_body.md
+            echo "**Full Changelog**: https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md" >> release_body.md
+          fi
+          
+          echo "Release notes content:"
+          cat release_body.md
+      
+      - name: Create Git tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          
+          # Check if tag already exists
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists"
+          else
+            git tag -a "$VERSION" -m "Release $VERSION"
+            git push origin "$VERSION"
+            echo "Created and pushed tag $VERSION"
+          fi
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get_version.outputs.VERSION }}
+          name: Release ${{ steps.get_version.outputs.VERSION }}
+          body_path: release_body.md
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

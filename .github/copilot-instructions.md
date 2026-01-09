@@ -371,6 +371,34 @@ gradient = homeLocation.pressure - compareLocation.pressure
 - **API Keys**: Not required for Open-Meteo API (free tier)
 - **Rate Limiting**: None implemented - rely on Open-Meteo's fair use policy
 
+## Release Process
+
+When the user requests to "publish a release", "create a release", or similar phrases:
+
+1. **Check current version** in `package.json`
+2. **Verify CHANGELOG.md** has entries in the `[Unreleased]` section or a dated version section
+3. **Create release notes** file `RELEASE_NOTES_vX.Y.Z.md` if it doesn't exist (extract from CHANGELOG.md)
+4. **Update CHANGELOG.md** - move `[Unreleased]` items to a dated version section
+5. **Commit changes** (release notes and changelog)
+6. **Run release workflow**:
+   ```bash
+   gh workflow run release.yml
+   ```
+   Or provide instructions to run manually in GitHub Actions UI
+
+See `.github/prompts/release-automation.prompt.md` for detailed release automation instructions.
+
+### Quick Release Commands
+```bash
+# If GitHub CLI is available
+gh workflow run release.yml
+
+# Manual alternative
+git tag -a v1.5.3 -m "Release v1.5.3"
+git push origin v1.5.3
+gh release create v1.5.3 --title "Release v1.5.3" --notes-file RELEASE_NOTES_v1.5.3.md
+```
+
 ## Reminder
 
 🚨 **NEVER mark a task as complete without updating README.md, IMPLEMENTATION.md, and CHANGELOG.md!**
