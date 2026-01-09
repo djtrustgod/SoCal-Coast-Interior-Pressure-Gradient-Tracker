@@ -70,7 +70,7 @@ The main dashboard displays:
 
 - Current MSLP for the home location (customizable)
 - Pressure gradients for up to 3 comparison locations (customizable)
-- **24-hour pressure trend graphs** for each comparison location showing hourly data
+- **Pressure trend graphs** for each comparison location showing historical hourly data up to current hour (Pacific time)
 - Color-coded interpretations (offshore flow, onshore flow, neutral)
 - Last update timestamps in your local timezone (e.g., "Dec 6, 2025, 8:00 PM PST")
 - Manual refresh button to fetch the latest data on-demand

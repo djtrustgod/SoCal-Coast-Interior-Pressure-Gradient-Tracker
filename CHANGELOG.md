@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- Fixed pressure trend charts to display only historical data up to current hour, removing confusing future forecast times
+- Charts now correctly filter time series data in Pacific timezone to show only past/current pressure readings
+
+## [1.5.3] - 2026-01-06
+
+### Fixed
+
+- Fixed "Invalid location data" error when adding new locations - ID field is now auto-generated from the location code (lowercase)
+- Location IDs are now automatically created from the code field (e.g., "SLC" becomes "slc") to ensure valid data submission
+
 ## [1.5.2] - 2026-01-05
 
 ### Fixed

@@ -35,8 +35,18 @@ export function PressureTrendChart({
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
 
-  // Prepare chart data
-  const chartData = compareTimeSeries.time.map((time, index) => {
+  // Filter out future times - only show data up to current hour
+  const now = new Date();
+  const nowTimestamp = now.getTime();
+  
+  const filteredIndices = compareTimeSeries.time
+    .map((time, index) => ({ time, index }))
+    .filter(({ time }) => new Date(time).getTime() <= nowTimestamp)
+    .map(({ index }) => index);
+
+  // Prepare chart data - only include past/current data
+  const chartData = filteredIndices.map((index) => {
+    const time = compareTimeSeries.time[index];
     const dataPoint: any = {
       time,
       compareLocation: compareTimeSeries.pressure[index],

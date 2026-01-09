@@ -111,7 +111,7 @@ All planned features have been successfully implemented and the application is r
 - Header: Navigation and settings
 - **Dashboard Content**: Client component with refresh functionality
 - **Gradient Card**: Pressure difference visualization with timezone-aware timestamps and trend charts
-- **Pressure Trend Chart**: 24-hour line chart component with light/dark theme support, responsive design, dual-line option for home vs. comparison
+- **Pressure Trend Chart**: Line chart component displaying historical data up to current hour, filters out future forecasts, light/dark theme support, responsive design, dual-line option for home vs. comparison
 - **Edit Location Dialog**: Modal form for editing location details
 
 ### File Structure Created

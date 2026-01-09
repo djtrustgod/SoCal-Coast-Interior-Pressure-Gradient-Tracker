@@ -72,12 +72,18 @@ export default function LocationsPage() {
 
   const handleSaveAdd = async (newLocation: Location) => {
     try {
+      // Auto-generate ID from code (lowercase)
+      const locationWithId = {
+        ...newLocation,
+        id: newLocation.code.toLowerCase(),
+      };
+      
       const response = await fetch("/api/locations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newLocation),
+        body: JSON.stringify(locationWithId),
       });
 
       if (response.ok) {

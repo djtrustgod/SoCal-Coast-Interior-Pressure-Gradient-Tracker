@@ -206,13 +206,22 @@
       "longitude": -114.606,
       "type": "interior",
       "elevation": 65
+    },
+    {
+      "id": "slc",
+      "name": "Salt Lake City",
+      "code": "SLC",
+      "latitude": 40.76,
+      "longitude": -111.89,
+      "type": "interior",
+      "elevation": 1299
     }
   ],
   "homeLocationId": "sna",
   "dashboardLocationIds": [
     "dag",
     "las",
-    "psp"
+    "slc"
   ],
   "apiRefreshInterval": 300
 }
