@@ -215,13 +215,22 @@
       "longitude": -111.89,
       "type": "interior",
       "elevation": 1299
+    },
+    {
+      "id": "tph",
+      "name": "Tonopah",
+      "code": "TPH",
+      "latitude": 38.0603,
+      "longitude": -117.0869,
+      "type": "interior",
+      "elevation": 1653
     }
   ],
   "homeLocationId": "sna",
   "dashboardLocationIds": [
     "dag",
     "las",
-    "slc"
+    "tph"
   ],
   "apiRefreshInterval": 300
 }
