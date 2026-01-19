@@ -7,6 +7,9 @@ import { DashboardContent } from "@/components/dashboard-content";
 import { readLocationsFile } from "@/lib/data/locations";
 import { Location } from "@/types/location";
 
+// Force dynamic rendering to ensure fresh data on refresh
+export const dynamic = 'force-dynamic';
+
 // This is a Server Component by default
 export default async function Home({
   searchParams,

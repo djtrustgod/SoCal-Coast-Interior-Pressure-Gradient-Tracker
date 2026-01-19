@@ -375,16 +375,27 @@ gradient = homeLocation.pressure - compareLocation.pressure
 
 When the user requests to "publish a release", "create a release", or similar phrases:
 
-1. **Check current version** in `package.json`
+1. **Ask user for new version number** (e.g., "1.5.5")
 2. **Verify CHANGELOG.md** has entries in the `[Unreleased]` section or a dated version section
 3. **Create release notes** file `RELEASE_NOTES_vX.Y.Z.md` if it doesn't exist (extract from CHANGELOG.md)
-4. **Update CHANGELOG.md** - move `[Unreleased]` items to a dated version section
-5. **Commit changes** (release notes and changelog)
-6. **Run release workflow**:
+4. **Update CHANGELOG.md** - move `[Unreleased]` items to a dated version section with current date (YYYY-MM-DD format)
+5. **Update version and build date** automatically:
+   - Update `version` field in `package.json` to new version
+   - Update version number in `components/footer.tsx` (format: "Version X.Y.Z")
+   - Update build date in `components/footer.tsx` to current date (format: "Built Month Day, Year")
+6. **Commit changes** to repository (release notes, changelog, package.json, and footer.tsx)
+7. **Run automated release workflow**:
    ```bash
    gh workflow run release.yml
    ```
    Or provide instructions to run manually in GitHub Actions UI
+8. **Redeploy local Docker runtime** following steps in `.github/copilot-docker-redeploy.md`:
+   ```bash
+   docker-compose down
+   docker-compose build --no-cache
+   docker-compose up -d
+   docker logs --tail 20 socal-pressure-tracker
+   ```
 
 See `.github/prompts/release-automation.prompt.md` for detailed release automation instructions.
 
