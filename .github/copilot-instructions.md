@@ -125,6 +125,7 @@ data/              # JSON data files
 ## Common Pitfalls and Gotchas
 
 ### Next.js 16 Specific
+- **Dynamic Rendering**: Add `export const dynamic = 'force-dynamic'` to pages that need fresh data on every request (e.g., dashboard with real-time weather data) to prevent stale data after system hibernation or caching issues
 - **Dynamic Routes**: Mark dynamic API routes with `export const dynamic = 'force-dynamic'`
 - **Revalidation**: Use `revalidatePath()` for on-demand revalidation after mutations
 - **Server vs Client**: Avoid mixing server-only code with client components
@@ -268,8 +269,9 @@ When implementing a feature:
 4. **Update IMPLEMENTATION.md** with technical details
 5. **Update CHANGELOG.md** by adding changes to the [Unreleased] section
 6. **Verify documentation accuracy** by reading through changes
-7. **Update version number** in `package.json` if the change is significant (new features, breaking changes, or major bug fixes)
-8. **Commit all changes together** (code + documentation + changelog)
+7. **Commit all changes together** (code + documentation + changelog)
+
+**Note**: Version numbers are updated automatically during the release process.
 
 ## Example Documentation Updates
 
@@ -397,18 +399,7 @@ When the user requests to "publish a release", "create a release", or similar ph
    docker logs --tail 20 socal-pressure-tracker
    ```
 
-See `.github/prompts/release-automation.prompt.md` for detailed release automation instructions.
-
-### Quick Release Commands
-```bash
-# If GitHub CLI is available
-gh workflow run release.yml
-
-# Manual alternative
-git tag -a v1.5.3 -m "Release v1.5.3"
-git push origin v1.5.3
-gh release create v1.5.3 --title "Release v1.5.3" --notes-file RELEASE_NOTES_v1.5.3.md
-```
+See `.github/prompts/release-automation.prompt.md` for detailed release automation instructions and `.github/copilot-docker-redeploy.md` for Docker deployment steps.
 
 ## Reminder
 
