@@ -48,6 +48,9 @@ yarn-error.log*
 *.swo
 *~
 .project
+
+# MCP Tools
+.playwright-mcp
 .classpath
 .settings/
 *.sublime-project

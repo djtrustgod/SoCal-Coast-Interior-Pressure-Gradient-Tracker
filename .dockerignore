@@ -48,6 +48,9 @@ RELEASE_NOTES*.md
 .gitlab-ci.yml
 .travis.yml
 
+# MCP Tools
+.playwright-mcp
+
 # Testing
 __tests__
 *.test.ts
