@@ -1,15 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
   <defs>
-    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#22c55e;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#16a34a;stop-opacity:1" />
+    <linearGradient id="windGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#0ea5e9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#06b6d4;stop-opacity:1" />
     </linearGradient>
   </defs>
-  <path d="M50 10 C20 10 10 40 10 60 C10 80 30 90 50 90 C50 70 50 50 50 30 C60 45 70 55 80 60 C90 40 80 20 50 10Z" fill="url(#leafGrad)"/>
-  <path d="M50 90 C50 70 50 50 50 30" stroke="#15803d" stroke-width="2" fill="none"/>
-  <path d="M50 45 C40 40 35 35 30 30" stroke="#15803d" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <path d="M50 55 C42 52 37 48 32 44" stroke="#15803d" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <path d="M50 65 C44 63 39 60 35 56" stroke="#15803d" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <path d="M50 40 C58 38 64 34 70 28" stroke="#15803d" stroke-width="1.5" fill="none" opacity="0.7"/>
-  <path d="M50 50 C60 48 68 44 74 38" stroke="#15803d" stroke-width="1.5" fill="none" opacity="0.7"/>
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="45" fill="#f0f9ff" opacity="0.5"/>
+  <!-- Wind streams - flowing curved lines -->
+  <path d="M15 30 Q35 25 55 30 T85 30" stroke="url(#windGrad)" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <path d="M10 45 Q30 42 50 45 T90 45" stroke="url(#windGrad)" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <path d="M20 60 Q40 57 60 60 T88 60" stroke="url(#windGrad)" stroke-width="4" fill="none" stroke-linecap="round" opacity="0.8"/>
+  <path d="M15 75 Q35 72 55 75 T80 75" stroke="url(#windGrad)" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.6"/>
+  <!-- Arrow tips to suggest direction -->
+  <path d="M82 27 L85 30 L82 33" stroke="#0284c7" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M87 42 L90 45 L87 48" stroke="#0284c7" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
