@@ -44,11 +44,11 @@
       "id": "las",
       "name": "Las Vegas",
       "code": "LAS",
-      "icaoCode": "KLAS",
-      "latitude": 36.084,
-      "longitude": -115.1537,
+      "icaoCode": "KVGT",
+      "latitude": 36.2108,
+      "longitude": -115.1942,
       "type": "interior",
-      "elevation": 664
+      "elevation": 672
     },
     {
       "id": "lax",
