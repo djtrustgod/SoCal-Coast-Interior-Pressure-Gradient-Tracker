@@ -2,6 +2,7 @@ export interface Location {
   id: string;
   name: string;
   code: string;
+  icaoCode: string;
   latitude: number;
   longitude: number;
   type: "coast" | "interior";
@@ -11,7 +12,7 @@ export interface Location {
 export interface PressureReading {
   locationId: string;
   timestamp: string;
-  pressure: number; // in hPa
+  pressure: number; // in mb (millibars, equivalent to hPa)
   temperature?: number; // in Celsius
   timeSeries?: {
     time: string[];

@@ -127,7 +127,22 @@ export function EditLocationDialog({
                 })
               }
               placeholder="3-letter code"
-              maxLength={3}
+              maxLength={4}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="icaoCode">ICAO Code</Label>
+            <Input
+              id="icaoCode"
+              value={formData.icaoCode}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  icaoCode: e.target.value.toUpperCase(),
+                })
+              }
+              placeholder="4-letter ICAO code (e.g. KSNA)"
+              maxLength={4}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">

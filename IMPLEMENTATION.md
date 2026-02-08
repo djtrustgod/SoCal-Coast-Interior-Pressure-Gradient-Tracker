@@ -11,7 +11,7 @@ All planned features have been successfully implemented and the application is r
 - ✅ **Tailwind CSS + shadcn/ui** - Beautiful, responsive UI with light/dark themes
 - ✅ **Recharts Integration** - Interactive, responsive pressure trend charts with theme support
 - ✅ **JSON-based storage** - Simple, persistent location configuration
-- ✅ **Open-Meteo API integration** - Free weather data, no API key needed, 24-hour time series data
+- ✅ **NOAA METAR API integration** - Real airport observation data with ICAO codes, pressure validation (950-1050 mb)
 - ✅ **Configurable Data Refresh** - User-configurable API refresh interval (1-60 minutes)
 - ✅ **Auto-Refresh Dashboard** - Browser automatically refreshes every 5 minutes
 
@@ -74,11 +74,13 @@ All planned features have been successfully implemented and the application is r
 ### Technical Implementation
 
 #### Data Layer
-- **24 Pre-configured Locations**: Santa Ana, Santa Barbara, Santa Maria, Barstow, Daggett, LAX, Burbank, Ontario, Palm Springs, San Diego, Carlsbad, Santa Monica, Van Nuys, Oxnard, Bakersfield, San Luis Obispo, Visalia, El Centro, Indio, Long Beach, Riverside, San Bernardino, Monterey, San Jose
+- **25 Verified METAR Stations**: Santa Ana (KSNA), Santa Barbara (KSBA), Santa Maria (KSMX), Barstow (KDAG), Las Vegas (KLAS), LAX (KLAX), Burbank (KBUR), Ontario (KONT), Palm Springs (KPSP), San Diego (KSAN), Carlsbad (KCRQ), Santa Monica (KSMO), Van Nuys (KVNY), Oxnard (KOXR), Bakersfield (KBFL), San Luis Obispo (KSBP), Visalia (KVIS), Thermal (KTRM), Long Beach (KLGB), Riverside (KRIV), San Bernardino (KSBD), San Jose (KSJC), Yuma (KYUM), Salt Lake City (KSLC), Tonopah (KTPH)
+
+- **Resilient Data Fetching**: Uses `Promise.allSettled` pattern so a single station failure (e.g., KYUM returning no observations) does not break the entire batch. `fetchMSLPForLocationsSettled()` returns per-station success/error results. The `/api/pressure` endpoint returns partial data with an `errors` array for failed stations. Dashboard shows a yellow warning banner listing any failed stations.
 
 - **Location Types**: 
-  - Coastal: 13 locations
-  - Interior: 11 locations
+  - Coastal: 10 locations
+  - Interior: 15 locations
 
 - **Home Location**: Santa Ana (SNA) - fully configurable via UI
 - **Dashboard Locations**: Santa Barbara, Santa Maria, Daggett (default) - fully configurable via UI (max 3)
@@ -92,13 +94,13 @@ All planned features have been successfully implemented and the application is r
 #### Calculations
 - **Pressure Gradient**: Home MSLP - Comparison MSLP
 - **Interpretations**:
-  - Strong Offshore: > +5 hPa (red)
-  - Moderate Offshore: +2 to +5 hPa (orange)
-  - Weak Offshore: +0.5 to +2 hPa (yellow)
-  - Neutral: -0.5 to +0.5 hPa (gray)
-  - Weak Onshore: -2 to -0.5 hPa (blue)
-  - Moderate Onshore: -5 to -2 hPa (cyan)
-  - Strong Onshore: < -5 hPa (indigo)
+  - Strong Offshore: > +5 mb (red)
+  - Moderate Offshore: +2 to +5 mb (orange)
+  - Weak Offshore: +0.5 to +2 mb (yellow)
+  - Neutral: -0.5 to +0.5 mb (gray)
+  - Weak Onshore: -2 to -0.5 mb (blue)
+  - Moderate Onshore: -5 to -2 mb (cyan)
+  - Strong Onshore: < -5 mb (indigo)
 
 #### UI Components
 - Card: Location and gradient display
@@ -147,7 +149,7 @@ All planned features have been successfully implemented and the application is r
 │
 ├── lib/
 │   ├── api/
-│   │   └── open-meteo.ts        # Weather API client
+│   │   └── metar.ts             # NOAA METAR API client (Pa→mb conversion, validation)
 │   ├── calculations/
 │   │   └── gradient.ts          # Pressure calculations
 │   ├── data/
@@ -155,12 +157,13 @@ All planned features have been successfully implemented and the application is r
 │   └── utils.ts                 # Utility functions
 │
 ├── data/
-│   └── locations.json           # 25 location configs + settings (home, dashboard, apiRefreshInterval)
+│   └── locations.json           # 25 verified METAR station configs + settings (home, dashboard, apiRefreshInterval)
 │
 ├── types/
 │   └── location.ts              # TypeScript definitions (Location, PressureReading, PressureGradient, LocationSettings)
 │
-├── public/                      # Static assets (empty)
+├── public/
+│   └── favicon.svg              # Green leaf SVG favicon
 │
 ├── Configuration Files
 │   ├── .env.local.example       # Environment variables template
@@ -232,7 +235,7 @@ All planned features have been successfully implemented and the application is r
 16. Theme toggle (light/dark) functional
 17. Location management page with full CRUD operations
 18. API endpoints responding correctly (GET/POST/PATCH/PUT/DELETE)
-19. Data fetching from Open-Meteo API with proper hour selection and time series
+19. Data fetching from NOAA METAR API with ICAO station codes and pressure validation
 20. JSON storage working with homeLocationId, dashboardLocationIds, and apiRefreshInterval
 21. Responsive design implemented including chart responsiveness
 22. Automatic removal of deleted locations from dashboard list
@@ -363,6 +366,6 @@ The application is ready for:
 **Project Status**: ✅ COMPLETE AND FULLY FEATURED
 **Build Time**: Initial ~15 minutes + Enhancements ~3 hours
 **Lines of Code**: ~3,700+
-**Technologies**: Next.js 16.0.7 (Turbopack), React 19, TypeScript, Tailwind CSS, shadcn/ui, Open-Meteo API, Docker
-**Version**: 1.5.1
-**Last Updated**: January 1, 2026
+**Technologies**: Next.js 16.0.7 (Turbopack), React 19, TypeScript, Tailwind CSS, shadcn/ui, NOAA Weather API (METAR), Docker
+**Version**: 1.5.4
+**Last Updated**: February 7, 2026

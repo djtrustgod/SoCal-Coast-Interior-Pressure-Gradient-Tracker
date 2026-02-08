@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchMSLPForLocations } from "@/lib/api/open-meteo";
+import { fetchMSLPForLocationsSettled } from "@/lib/api/metar";
 import { readLocationsFile } from "@/lib/data/locations";
 import { Location } from "@/types/location";
 
@@ -31,11 +31,20 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const pressureReadings = await fetchMSLPForLocations(requestedLocations);
+    const results = await fetchMSLPForLocationsSettled(requestedLocations);
+
+    const successData = results
+      .filter((r) => r.status === "success" && r.data)
+      .map((r) => r.data!);
+
+    const errors = results
+      .filter((r) => r.status === "error")
+      .map((r) => ({ locationId: r.locationId, locationName: r.locationName, error: r.error }));
 
     return NextResponse.json({
       success: true,
-      data: pressureReadings,
+      data: successData,
+      errors: errors.length > 0 ? errors : undefined,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {

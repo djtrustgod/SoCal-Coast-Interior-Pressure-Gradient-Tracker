@@ -7,6 +7,7 @@ const LocationSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1),
   code: z.string().min(1),
+  icaoCode: z.string().min(4).max(4),
   latitude: z.number().min(-90).max(90),
   longitude: z.number().min(-180).max(180),
   type: z.enum(["coast", "interior"]),
@@ -119,13 +120,31 @@ export async function PUT(request: NextRequest) {
   }
 }
 
+// Backward compatibility: map old location IDs to new ones
+const ID_MIGRATION_MAP: Record<string, string> = {
+  vnr: "vny",
+  lbb: "lgb",
+};
+
+function migrateLocationId(id: string): string {
+  return ID_MIGRATION_MAP[id] || id;
+}
+
 // PATCH - Update home location, dashboard locations, or API refresh interval
 export async function PATCH(request: NextRequest) {
   try {
     const body = await request.json();
-    const { homeLocationId, dashboardLocationIds, apiRefreshInterval } = body;
+    let { homeLocationId, dashboardLocationIds, apiRefreshInterval } = body;
 
     const data = await readLocationsFile();
+
+    // Apply ID migration for backward compatibility
+    if (homeLocationId !== undefined) {
+      homeLocationId = migrateLocationId(homeLocationId);
+    }
+    if (dashboardLocationIds !== undefined && Array.isArray(dashboardLocationIds)) {
+      dashboardLocationIds = dashboardLocationIds.map(migrateLocationId);
+    }
 
     if (homeLocationId !== undefined) {
       if (typeof homeLocationId !== "string") {

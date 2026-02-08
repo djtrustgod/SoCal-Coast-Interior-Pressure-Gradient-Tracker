@@ -8,6 +8,7 @@ node_modules
 coverage
 *.lcov
 .nyc_output
+.playwright-mcp
 
 # Next.js
 .next/
@@ -50,7 +51,6 @@ yarn-error.log*
 .project
 
 # MCP Tools
-.playwright-mcp
 .classpath
 .settings/
 *.sublime-project

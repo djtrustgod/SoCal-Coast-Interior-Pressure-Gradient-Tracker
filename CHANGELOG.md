@@ -7,6 +7,60 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Fix single METAR station failure (e.g., Yuma/KYUM) causing all pressure data fetches to fail
+- Replace `Promise.all` with `Promise.allSettled` pattern in `fetchMSLPForLocations` so individual station errors are isolated
+- Pressure API (`/api/pressure`) now returns partial results with per-station error details instead of a blanket 500 error
+- Dashboard gracefully handles individual station failures, showing data for available stations and a warning banner for failed ones
+
+### Changed
+
+- E2E testing approach updated: test runner prompt removed, test plan retained as reference only
+- Remove `@playwright/test` from devDependencies (not currently used for automated testing)
+
+### Added
+
+- Known Issues & Lessons Learned section added to E2E test plan documenting DOM selector challenges
+- Test Results History section added to E2E test plan with February 2026 initial run data (21/35 passed)
+
+### Removed
+
+- Delete `e2e/` directory and all generated Playwright spec files
+- Delete `.github/prompts/test-playwright-e2e.prompt.md` (test runner prompt)
+
+---
+
+### Added (prior unreleased)
+
+- NOAA Weather API (METAR) integration replacing Open-Meteo grid-based forecasts for real airport observations
+- ICAO code field (`icaoCode`) added to Location type and all 25 location entries
+- New METAR API client at `lib/api/metar.ts` with Pascals-to-millibars conversion and pressure validation (950-1050 mb)
+- Thermal (KTRM) station replacing Indio/Thermal (IPX) which had no valid METAR station
+- SVG favicon with green leaf design
+- 🍃 leaf emoji added to application title in header
+- Favicon metadata in app layout
+- Backward compatibility ID migration in PATCH endpoint (vnr→vny, lbb→lgb)
+- "Limited historical data available" fallback message for trend charts with <12 data points
+
+### Changed
+
+- Data source migrated from Open-Meteo API to NOAA Weather API (METAR observations)
+- Pressure unit display changed from "hPa" to "mb" (millibars) throughout the UI
+- All 25 locations are now verified METAR reporting airports with 4-letter ICAO codes
+- Pressure trend charts now handle variable-length time series from METAR data
+- Location data updated: 25 verified stations (10 coastal, 15 interior) with ICAO codes
+
+### Removed
+
+- Indio/Thermal (IPX) - incorrect station code, replaced by Thermal (KTRM)
+
+### Fixed
+
+- Van Nuys location code corrected from VNR to VNY (KVNY) with proper ICAO code
+- Long Beach location code corrected from LBB to LGB (KLGB) with updated coordinates
+- Old location IDs (vnr, lbb) automatically mapped to new IDs (vny, lgb) in PATCH endpoint for backward compatibility
+
 ## [1.5.4] - 2026-01-19
 
 ### Fixed

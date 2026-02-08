@@ -9,11 +9,11 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 
 ## Features
 
-- 🌡️ **Real-time MSLP Data**: Fetches current pressure data from Open-Meteo API
+- 🌡️ **Real-time MSLP Data**: Fetches current pressure data from NOAA METAR airport observations
 - 📊 **Pressure Gradient Visualization**: Displays pressure differences between home location and up to 3 comparison locations
 - 📈 **24-Hour Pressure Trend Graphs**: Interactive line charts showing pressure trends over the past 24 hours for each location
 - 🎨 **Modern UI**: Clean, responsive design with light/dark theme support
-- 📍 **24 Pre-configured Locations**: Includes major coastal and interior SoCal locations
+- 📍 **25 Verified METAR Stations**: All locations are verified airport METAR reporting stations with ICAO codes
 - ⚙️ **Location Management**: Add, edit, and delete locations (max 25)
 - 🏠 **Set Home Location**: Choose any location as your home base from the Settings UI
 - 👁️ **Dashboard Customization**: Select up to 3 locations to display on the dashboard
@@ -23,6 +23,7 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 - 🕐 **Timezone-Aware Timestamps**: All timestamps automatically converted to your local timezone
 - 💾 **Persistent Storage**: JSON-based data storage for location configurations
 - ⏱️ **Smart Data Updates**: Data cached with configurable revalidation (default 5 minutes), shows current hour readings
+- 🛡️ **Resilient Data Fetching**: Individual station failures don't break the entire dashboard — failed stations are reported gracefully
 
 ## Technology Stack
 
@@ -31,7 +32,7 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 - **Styling**: Tailwind CSS
 - **UI Components**: shadcn/ui (Radix UI primitives)
 - **Charts**: Recharts (responsive charting library)
-- **Data Source**: Open-Meteo API (free, no API key required)
+- **Data Source**: NOAA Weather API (METAR observations, no API key required)
 - **Icons**: Lucide React
 - **Theme**: next-themes (light/dark mode)
 
@@ -70,12 +71,13 @@ The main dashboard displays:
 
 - Current MSLP for the home location (customizable)
 - Pressure gradients for up to 3 comparison locations (customizable)
-- **Pressure trend graphs** for each comparison location showing historical hourly data up to current hour (Pacific time)
+- **Pressure trend graphs** for each comparison location showing historical METAR observations
 - Color-coded interpretations (offshore flow, onshore flow, neutral)
 - Last update timestamps in your local timezone (e.g., "Dec 6, 2025, 8:00 PM PST")
 - Manual refresh button to fetch the latest data on-demand
 - Automatic browser refresh every 5 minutes to keep data current
 - Configurable API data caching (1-60 minutes)
+- Pressure values displayed in millibars (mb)
 
 ### Interpreting Gradients
 
@@ -90,7 +92,7 @@ Navigate to the Settings (gear icon) to:
 - View all configured locations (coastal vs. interior)
 - **Set Home Location**: Click the home icon next to any location to set it as your home base
 - **Select Dashboard Locations**: Click the eye icon to add/remove locations from dashboard display (max 3)
-- **Configure API Refresh Interval**: Set how often data is fetched from Open-Meteo API (1, 5, 10, 15, 30, or 60 minutes)
+- **Configure API Refresh Interval**: Set how often data is fetched from NOAA Weather API (1, 5, 10, 15, 30, or 60 minutes)
 - Add new locations (up to 25 total)
 - Edit existing locations (name, code, coordinates, type, elevation)
 - Delete locations (locations in use as home cannot be deleted)
@@ -120,7 +122,7 @@ Navigate to the Settings (gear icon) to:
 │   └── theme-toggle.tsx     # Light/dark mode toggle
 ├── lib/
 │   ├── api/
-│   │   └── open-meteo.ts    # Open-Meteo API client
+│   │   └── metar.ts         # NOAA METAR API client
 │   ├── calculations/
 │   │   └── gradient.ts      # Pressure gradient calculations
 │   ├── data/
@@ -360,7 +362,7 @@ docker logs socal-pressure-tracker     # View startup logs
 
 **Port Configuration**: To use a different port, change the mapping: `-p 8080:3000` maps host port 8080 to container port 3000.
 
-**Network Requirements**: The container needs outbound internet access to reach the Open-Meteo API.
+**Network Requirements**: The container needs outbound internet access to reach the NOAA Weather API.
 
 ## Contributing
 
@@ -372,7 +374,7 @@ This project is released under the CC0 1.0 Universal (Public Domain) license. Se
 
 ## Acknowledgments
 
-- Weather data provided by [Open-Meteo](https://open-meteo.com/)
+- Weather data provided by [NOAA Weather API](https://www.weather.gov/documentation/services-web-api) (METAR observations)
 - UI components from [shadcn/ui](https://ui.shadcn.com/)
 - Built with [Next.js](https://nextjs.org/)
 

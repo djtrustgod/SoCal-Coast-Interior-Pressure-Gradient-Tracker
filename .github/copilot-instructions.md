@@ -8,7 +8,7 @@ This is a Next.js 16 web application that tracks and displays Mean Sea Level Pre
 - **Framework**: Next.js 16 with App Router and Turbopack
 - **Language**: TypeScript (strict mode enabled)
 - **Styling**: Tailwind CSS with shadcn/ui components
-- **Data Source**: Open-Meteo API (free, no API key required)
+- **Data Source**: NOAA Weather API (METAR observations from verified airport stations)
 - **Data Storage**: JSON file-based storage (`data/locations.json`)
 
 **Architecture:**
@@ -40,10 +40,6 @@ npx tsc --noEmit
 **Important Notes:**
 - Always run `npm run build` before committing to catch TypeScript errors
 - ESLint configuration uses `next/core-web-vitals` preset
-- **No test framework is currently configured** - when adding tests, consider using:
-  - Vitest or Jest for unit tests
-  - React Testing Library for component tests
-  - Playwright or Cypress for E2E tests
 - Use Turbopack for faster development builds (automatic with Next.js 16)
 - TypeScript strict mode is enabled - run `npx tsc --noEmit` to catch type errors
 
@@ -138,8 +134,8 @@ data/              # JSON data files
 - **Location Limits**: Maximum 25 locations, max 3 dashboard locations
 
 ### API Integration
-- **Open-Meteo API**: No authentication required, but respect rate limits
-- **Data Freshness**: Current hour data is fetched, not midnight values
+- **NOAA Weather API**: No API key required, but must include User-Agent header; respect rate limits
+- **Data Freshness**: Most recent METAR observation is used (typically updated every hour)
 - **Error Handling**: Always handle API failures gracefully with fallbacks
 
 ### TypeScript
@@ -149,14 +145,17 @@ data/              # JSON data files
 
 ## API Integration Details
 
-### Open-Meteo API
+### NOAA Weather API (METAR)
 ```typescript
-// Endpoint: https://api.open-meteo.com/v1/forecast
+// Endpoint: https://api.weather.gov/stations/{ICAO}/observations
 // Parameters:
-// - latitude, longitude: Location coordinates
-// - hourly: pressure_msl (Mean Sea Level Pressure)
-// - timezone: auto
-// - forecast_days: 1
+// - {ICAO}: 4-letter ICAO station code (e.g., KSNA, KLAX, KDAG)
+// - limit: Number of recent observations to fetch
+// Headers:
+// - User-Agent: Required by NOAA API
+// - Accept: application/geo+json
+// Response: Pressure in Pascals (divide by 100 for mb/hPa)
+// Validation: Pressure must be in range 950-1050 mb
 ```
 
 ### Internal API Endpoints
@@ -168,7 +167,7 @@ data/              # JSON data files
 **POST `/api/locations`**
 - Add new location (max 25 total)
 - Validates with Zod schema
-- Body: `{ id, name, code, latitude, longitude, type, elevation? }`
+- Body: `{ id, name, code, icaoCode, latitude, longitude, type, elevation? }`
 
 **PATCH `/api/locations`**
 - Update home location, dashboard selections, or API refresh interval
@@ -286,7 +285,7 @@ When implementing a feature:
 **IMPLEMENTATION.md Update**:
 ```markdown
 #### Debug Section (`/locations`)
-- View raw JSON output from Open-Meteo API
+- View raw JSON output from NOAA METAR API
 - Displays formatted cards with pressure, temperature, timestamp
 - On-demand data fetching with refresh button
 - Shows all configured locations simultaneously
@@ -338,19 +337,19 @@ gradient = homeLocation.pressure - compareLocation.pressure
   - Associated with dry, warm, and potentially dangerous fire weather
 
 **Gradient Thresholds** (defined in `lib/calculations/gradient.ts`):
-- Strong Onshore: > +5 hPa
-- Moderate Onshore: +2 to +5 hPa
-- Weak Onshore: +0.5 to +2 hPa
-- Neutral: -0.5 to +0.5 hPa
-- Weak Offshore: -2 to -0.5 hPa
-- Moderate Offshore: -5 to -2 hPa
-- Strong Offshore: < -5 hPa
+- Strong Onshore: > +5 mb
+- Moderate Onshore: +2 to +5 mb
+- Weak Onshore: +0.5 to +2 mb
+- Neutral: -0.5 to +0.5 mb
+- Weak Offshore: -2 to -0.5 mb
+- Moderate Offshore: -5 to -2 mb
+- Strong Offshore: < -5 mb
 
 **DO NOT change these thresholds** without consulting meteorological references, as they are based on practical observations of Southern California weather patterns.
 
 ### Location Management
 
-- **Maximum 25 locations** total (configurable in code)
+- **Maximum 25 locations** total (configurable in code, currently 25 verified METAR stations)
 - **Maximum 3 dashboard locations** (selectable by user)
 - **Location Types**: "coast" or "interior" (affects gradient interpretation)
 - **Elevation**: Optional field in meters above sea level
@@ -369,9 +368,10 @@ gradient = homeLocation.pressure - compareLocation.pressure
 
 - **No authentication** - this is a public weather tracking tool
 - **Input Validation**: All API inputs validated with Zod schemas
+- **Pressure Validation**: METAR pressure readings validated to 950-1050 mb range
 - **File System Access**: Limited to `data/locations.json` for configuration
-- **API Keys**: Not required for Open-Meteo API (free tier)
-- **Rate Limiting**: None implemented - rely on Open-Meteo's fair use policy
+- **API Keys**: Not required for NOAA Weather API
+- **Rate Limiting**: None implemented - rely on NOAA's fair use policy; User-Agent header required
 
 ## Release Process
 

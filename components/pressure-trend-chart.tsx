@@ -72,7 +72,7 @@ export function PressureTrendChart({
   // Format tooltip
   const formatTooltip = (value: number | undefined) => {
     if (value === undefined) return "N/A";
-    return `${value.toFixed(1)} hPa`;
+    return `${value.toFixed(1)} mb`;
   };
 
   // Theme colors
@@ -86,6 +86,16 @@ export function PressureTrendChart({
 
   return (
     <div className="w-full mt-4">
+      {chartData.length < 12 && chartData.length > 0 && (
+        <p className="text-xs text-muted-foreground mb-2 italic">
+          Limited historical data available ({chartData.length} observations)
+        </p>
+      )}
+      {chartData.length === 0 ? (
+        <p className="text-xs text-muted-foreground italic">
+          No historical data available
+        </p>
+      ) : (
       <ResponsiveContainer width="100%" height={256} minHeight={256}>
         <LineChart
           data={chartData}
@@ -153,6 +163,7 @@ export function PressureTrendChart({
           )}
         </LineChart>
       </ResponsiveContainer>
+      )}
     </div>
   );
 }

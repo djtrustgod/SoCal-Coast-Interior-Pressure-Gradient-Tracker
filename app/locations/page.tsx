@@ -62,6 +62,7 @@ export default function LocationsPage() {
       id: "",
       name: "",
       code: "",
+      icaoCode: "",
       latitude: 0,
       longitude: 0,
       type: "coast",
@@ -76,6 +77,7 @@ export default function LocationsPage() {
       const locationWithId = {
         ...newLocation,
         id: newLocation.code.toLowerCase(),
+        icaoCode: newLocation.icaoCode || `K${newLocation.code.toUpperCase()}`,
       };
       
       const response = await fetch("/api/locations", {
@@ -523,7 +525,7 @@ export default function LocationsPage() {
                 API Refresh Settings
               </CardTitle>
               <CardDescription>
-                Configure how often data is fetched from Open-Meteo API
+                Configure how often data is fetched from NOAA Weather API
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -573,7 +575,7 @@ export default function LocationsPage() {
                   Debug: API Raw Output
                 </CardTitle>
                 <CardDescription>
-                  View raw MSLP data from Open-Meteo API for all locations
+                  View raw MSLP data from NOAA METAR API for all locations
                 </CardDescription>
               </div>
               <Button
@@ -610,7 +612,7 @@ export default function LocationsPage() {
                         <CardContent className="text-xs space-y-1">
                           <div className="flex justify-between">
                             <span className="text-muted-foreground">Pressure:</span>
-                            <span className="font-medium">{reading.pressure.toFixed(1)} hPa</span>
+                            <span className="font-medium">{reading.pressure.toFixed(1)} mb</span>
                           </div>
                           {reading.temperature !== undefined && (
                             <div className="flex justify-between">

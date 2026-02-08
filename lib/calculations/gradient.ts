@@ -110,7 +110,7 @@ export function interpretGradient(gradient: number): {
  * Format pressure value for display
  */
 export function formatPressure(pressure: number): string {
-  return `${pressure.toFixed(1)} hPa`;
+  return `${pressure.toFixed(1)} mb`;
 }
 
 /**
@@ -118,5 +118,5 @@ export function formatPressure(pressure: number): string {
  */
 export function formatGradient(gradient: number): string {
   const sign = gradient >= 0 ? "+" : "";
-  return `${sign}${gradient.toFixed(2)} hPa`;
+  return `${sign}${gradient.toFixed(2)} mb`;
 }
