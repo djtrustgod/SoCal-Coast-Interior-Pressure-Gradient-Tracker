@@ -116,7 +116,7 @@ All planned features have been successfully implemented and the application is r
 
 ### File Structure Created
 
-\`\`\`
+```
 ├── app/
 │   ├── globals.css               # Tailwind styles + theme variables
 │   ├── layout.tsx                # Root layout with theme provider
@@ -176,7 +176,7 @@ All planned features have been successfully implemented and the application is r
     ├── README.md               # Full documentation
     ├── QUICKSTART.md           # Quick start guide
     └── LICENSE                 # CC0 1.0 Universal
-\`\`\`
+```
 
 ## Dependencies Installed
 
