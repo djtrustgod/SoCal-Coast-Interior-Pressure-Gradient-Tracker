@@ -25,6 +25,20 @@ interface PressureTrendChartProps {
   homeLocationName?: string;
 }
 
+/**
+ * Round a timestamp to the nearest hour for alignment between stations.
+ * METAR stations report at different minutes (e.g., :53, :56),
+ * so we normalize to the hour for chart alignment.
+ */
+function roundToHour(isoTime: string): string {
+  const d = new Date(isoTime);
+  if (d.getMinutes() >= 30) {
+    d.setHours(d.getHours() + 1);
+  }
+  d.setMinutes(0, 0, 0);
+  return d.toISOString();
+}
+
 export function PressureTrendChart({
   compareTimeSeries,
   homeTimeSeries,
@@ -35,30 +49,62 @@ export function PressureTrendChart({
   const currentTheme = theme === "system" ? systemTheme : theme;
   const isDark = currentTheme === "dark";
 
-  // Filter out future times - only show data up to current hour
   const now = new Date();
   const nowTimestamp = now.getTime();
-  
-  const filteredIndices = compareTimeSeries.time
-    .map((time, index) => ({ time, index }))
-    .filter(({ time }) => new Date(time).getTime() <= nowTimestamp)
-    .map(({ index }) => index);
 
-  // Prepare chart data - only include past/current data
-  const chartData = filteredIndices.map((index) => {
-    const time = compareTimeSeries.time[index];
-    const dataPoint: any = {
-      time,
-      compareLocation: compareTimeSeries.pressure[index],
-    };
-
-    // Add home location data if available
-    if (homeTimeSeries && homeTimeSeries.time[index] === time) {
-      dataPoint.homeLocation = homeTimeSeries.pressure[index];
+  // Build a map of hourly-rounded compare data
+  const compareByHour = new Map<string, number>();
+  compareTimeSeries.time.forEach((t, i) => {
+    if (new Date(t).getTime() <= nowTimestamp) {
+      const hourKey = roundToHour(t);
+      // Keep the latest observation for each hour
+      compareByHour.set(hourKey, compareTimeSeries.pressure[i]);
     }
+  });
 
+  // Build a map of hourly-rounded home data
+  const homeByHour = new Map<string, number>();
+  if (homeTimeSeries) {
+    homeTimeSeries.time.forEach((t, i) => {
+      if (new Date(t).getTime() <= nowTimestamp) {
+        const hourKey = roundToHour(t);
+        homeByHour.set(hourKey, homeTimeSeries.pressure[i]);
+      }
+    });
+  }
+
+  // Merge both series on the union of hourly keys, sorted chronologically
+  const allHourKeys = new Set([...compareByHour.keys(), ...homeByHour.keys()]);
+  const sortedHours = [...allHourKeys].sort(
+    (a, b) => new Date(a).getTime() - new Date(b).getTime()
+  );
+
+  // Count how many hourly data points each series actually has
+  const compareDataPoints = compareByHour.size;
+  const homeDataPoints = homeByHour.size;
+
+  // Prepare chart data aligned by hour
+  const chartData = sortedHours.map((hourKey) => {
+    const dataPoint: Record<string, string | number | undefined> = {
+      time: hourKey,
+    };
+    if (compareByHour.has(hourKey)) {
+      dataPoint.compareLocation = compareByHour.get(hourKey);
+    }
+    if (homeByHour.has(hourKey)) {
+      dataPoint.homeLocation = homeByHour.get(hourKey);
+    }
     return dataPoint;
   });
+
+  // Compute Y-axis domain from both data series with 1 mb padding
+  const allPressures: number[] = [];
+  for (const dp of chartData) {
+    if (dp.compareLocation !== undefined) allPressures.push(dp.compareLocation as number);
+    if (dp.homeLocation !== undefined) allPressures.push(dp.homeLocation as number);
+  }
+  const yMin = allPressures.length > 0 ? Math.floor(Math.min(...allPressures) - 1) : 1000;
+  const yMax = allPressures.length > 0 ? Math.ceil(Math.max(...allPressures) + 1) : 1030;
 
   // Format time for X-axis (show only hour)
   const formatXAxis = (timeString: string) => {
@@ -86,9 +132,14 @@ export function PressureTrendChart({
 
   return (
     <div className="w-full mt-4">
-      {chartData.length < 12 && chartData.length > 0 && (
+      {compareDataPoints < 6 && compareDataPoints > 0 && (
         <p className="text-xs text-muted-foreground mb-2 italic">
-          Limited historical data available ({chartData.length} observations)
+          ⚠ Limited trend data for {locationName} ({compareDataPoints}/24 hours collected — history builds over time)
+        </p>
+      )}
+      {homeTimeSeries && homeDataPoints < 6 && homeDataPoints > 0 && (
+        <p className="text-xs text-muted-foreground mb-2 italic">
+          ⚠ Limited trend data for {homeLocationName || "Home"} ({homeDataPoints}/24 hours collected)
         </p>
       )}
       {chartData.length === 0 ? (
@@ -113,7 +164,7 @@ export function PressureTrendChart({
             stroke={colors.text}
             style={{ fontSize: "12px" }}
             tick={{ fill: colors.text }}
-            domain={["auto", "auto"]}
+            domain={[yMin, yMax]}
             tickFormatter={(value) => value.toFixed(0)}
           />
           <Tooltip
@@ -149,6 +200,7 @@ export function PressureTrendChart({
             dot={false}
             name={locationName}
             isAnimationActive={false}
+            connectNulls
           />
           {homeTimeSeries && (
             <Line
@@ -159,6 +211,7 @@ export function PressureTrendChart({
               dot={false}
               name={homeLocationName || "Home"}
               isAnimationActive={false}
+              connectNulls
             />
           )}
         </LineChart>

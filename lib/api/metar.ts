@@ -57,7 +57,7 @@ export async function fetchMSLPForLocation(
   location: Location
 ): Promise<PressureReading> {
   const icao = location.icaoCode;
-  const url = `https://api.weather.gov/stations/${icao}/observations?limit=25`;
+  const url = `https://api.weather.gov/stations/${icao}/observations?limit=48`;
 
   const response = await fetch(url, {
     headers: {
@@ -81,18 +81,23 @@ export async function fetchMSLPForLocation(
     );
   }
 
-  // Find the most recent observation with valid pressure data
+  // Find the most recent observation with true Sea Level Pressure (MSLP).
+  // SLP is only reported in hourly METAR observations (typically at :50-:53).
+  // Sub-hourly/SPECI observations only have barometricPressure (altimeter setting),
+  // which differs from true MSLP by 0.3-1.5 mb depending on station elevation.
+  // We strongly prefer SLP; fall back to altimeter only if no SLP is available.
   let currentPressureMb: number | null = null;
   let currentTemperature: number | null = null;
   let currentTimestamp: string | null = null;
+  let usedFallback = false;
 
+  // First pass: look for an observation with seaLevelPressure (true MSLP)
   for (const obs of data.features) {
     const props = obs.properties;
-    const pressureValue =
-      props.seaLevelPressure?.value ?? props.barometricPressure?.value;
+    const slp = props.seaLevelPressure?.value;
 
-    if (pressureValue !== null && pressureValue !== undefined) {
-      currentPressureMb = pascalsToMillibars(pressureValue);
+    if (slp !== null && slp !== undefined) {
+      currentPressureMb = pascalsToMillibars(slp);
 
       if (props.temperature?.value !== null && props.temperature?.value !== undefined) {
         currentTemperature = props.temperature.value;
@@ -101,6 +106,32 @@ export async function fetchMSLPForLocation(
       currentTimestamp = props.timestamp;
       break;
     }
+  }
+
+  // Second pass (fallback): if no SLP found, use altimeter setting
+  if (currentPressureMb === null) {
+    for (const obs of data.features) {
+      const props = obs.properties;
+      const baro = props.barometricPressure?.value;
+
+      if (baro !== null && baro !== undefined) {
+        currentPressureMb = pascalsToMillibars(baro);
+        usedFallback = true;
+
+        if (props.temperature?.value !== null && props.temperature?.value !== undefined) {
+          currentTemperature = props.temperature.value;
+        }
+
+        currentTimestamp = props.timestamp;
+        break;
+      }
+    }
+  }
+
+  if (usedFallback) {
+    console.warn(
+      `[METAR] No SLP available for ${location.name} (${icao}); using altimeter setting as fallback (may differ from true MSLP)`
+    );
   }
 
   if (currentPressureMb === null || currentTimestamp === null) {
@@ -113,6 +144,7 @@ export async function fetchMSLPForLocation(
   validatePressure(currentPressureMb, location.name);
 
   // Build time series from available observations (for trend charts)
+  // Prefer seaLevelPressure (true MSLP); fall back to altimeter only when SLP is null
   const timeSeriesTime: string[] = [];
   const timeSeriesPressure: number[] = [];
   const timeSeriesTemperature: number[] = [];
@@ -121,17 +153,42 @@ export async function fetchMSLPForLocation(
   const observations = [...data.features].reverse();
   for (const obs of observations) {
     const props = obs.properties;
-    const pressureValue =
-      props.seaLevelPressure?.value ?? props.barometricPressure?.value;
+    const slp = props.seaLevelPressure?.value;
+    const baro = props.barometricPressure?.value;
+    // Prefer SLP (true MSLP), fall back to altimeter
+    const pressureValue = slp ?? baro;
 
     if (pressureValue !== null && pressureValue !== undefined) {
       const pressureMb = pascalsToMillibars(pressureValue);
       // Only include valid pressure readings
       if (pressureMb >= 950 && pressureMb <= 1050) {
-        timeSeriesTime.push(props.timestamp);
-        timeSeriesPressure.push(pressureMb);
-        if (props.temperature?.value !== null && props.temperature?.value !== undefined) {
-          timeSeriesTemperature.push(props.temperature.value);
+        // Only include observations that have SLP if we have enough SLP data points,
+        // otherwise include all to avoid empty charts
+        if (slp !== null && slp !== undefined) {
+          timeSeriesTime.push(props.timestamp);
+          timeSeriesPressure.push(pressureMb);
+          if (props.temperature?.value !== null && props.temperature?.value !== undefined) {
+            timeSeriesTemperature.push(props.temperature.value);
+          }
+        }
+      }
+    }
+  }
+
+  // If no SLP-only data points were found, fall back to including altimeter data
+  if (timeSeriesTime.length === 0) {
+    for (const obs of observations) {
+      const props = obs.properties;
+      const baro = props.barometricPressure?.value;
+
+      if (baro !== null && baro !== undefined) {
+        const pressureMb = pascalsToMillibars(baro);
+        if (pressureMb >= 950 && pressureMb <= 1050) {
+          timeSeriesTime.push(props.timestamp);
+          timeSeriesPressure.push(pressureMb);
+          if (props.temperature?.value !== null && props.temperature?.value !== undefined) {
+            timeSeriesTemperature.push(props.temperature.value);
+          }
         }
       }
     }

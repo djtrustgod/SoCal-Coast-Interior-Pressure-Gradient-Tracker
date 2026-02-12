@@ -47,8 +47,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/public ./public
 # This will be overridden by volume mount, but ensures directory exists
 RUN mkdir -p ./data && chown -R nextjs:nodejs ./data
 
-# Copy initial data file (will be used if no volume is mounted)
+# Copy initial data files (will be used if no volume is mounted)
 COPY --chown=nextjs:nodejs data/locations.json ./data/locations.json
+COPY --chown=nextjs:nodejs data/pressure-history.json ./data/pressure-history.json
 
 # Switch to non-root user
 USER nextjs

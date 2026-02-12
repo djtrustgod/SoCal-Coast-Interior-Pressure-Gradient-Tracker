@@ -11,7 +11,7 @@ All planned features have been successfully implemented and the application is r
 - ✅ **Tailwind CSS + shadcn/ui** - Beautiful, responsive UI with light/dark themes
 - ✅ **Recharts Integration** - Interactive, responsive pressure trend charts with theme support
 - ✅ **JSON-based storage** - Simple, persistent location configuration
-- ✅ **NOAA METAR API integration** - Real airport observation data with ICAO codes, pressure validation (950-1050 mb)
+- ✅ **NOAA METAR API integration** - Real airport observation data with ICAO codes, pressure validation (950-1050 mb), true MSLP (seaLevelPressure) preferred over altimeter setting
 - ✅ **Configurable Data Refresh** - User-configurable API refresh interval (1-60 minutes)
 - ✅ **Auto-Refresh Dashboard** - Browser automatically refreshes every 5 minutes
 
@@ -89,6 +89,8 @@ All planned features have been successfully implemented and the application is r
 - **Timestamp Handling**: Fetches 24-hour time series data, extracts current/most recent hour for display, timezone-aware rendering
 - **Time Series Storage**: Each `PressureReading` includes optional `timeSeries` object with arrays of time/pressure/temperature data
 - **Gradient Time Series**: `PressureGradient` objects include optional `homeTimeSeries` and `compareTimeSeries` for chart rendering
+- **24-Hour Persistent History**: `data/pressure-history.json` accumulates hourly MSLP readings for all 25 stations. On each dashboard load, fresh NOAA data is merged in, entries > 24 hours are pruned, and the file is atomically written. Time series on each `PressureReading` is enriched with the full 24-hour store before chart rendering. A module-level mutex prevents concurrent write races.
+- **Background Station Seeding**: After rendering the dashboard with home + compare locations, a fire-and-forget fetch retrieves data for all remaining stations and merges it into the history store, ensuring history is pre-built when users change dashboard selections.
 - **Runtime Data Loading**: Locations read from file system at runtime using `fs.readFile()` instead of static imports, ensuring changes are immediately reflected without rebuild
 
 #### Calculations
@@ -113,7 +115,7 @@ All planned features have been successfully implemented and the application is r
 - Header: Navigation and settings
 - **Dashboard Content**: Client component with refresh functionality
 - **Gradient Card**: Pressure difference visualization with timezone-aware timestamps and trend charts
-- **Pressure Trend Chart**: Line chart component displaying historical data up to current hour, filters out future forecasts, light/dark theme support, responsive design, dual-line option for home vs. comparison
+- **Pressure Trend Chart**: Line chart component displaying historical data up to current hour, filters out future forecasts, light/dark theme support, responsive design, dual-line option for home vs. comparison. Aligns time series by rounding METAR timestamps to nearest hour so both lines always appear regardless of station reporting offsets. Explicit Y-axis domain with 1 mb padding ensures both series are visible.
 - **Edit Location Dialog**: Modal form for editing location details
 
 ### File Structure Created
@@ -149,15 +151,17 @@ All planned features have been successfully implemented and the application is r
 │
 ├── lib/
 │   ├── api/
-│   │   └── metar.ts             # NOAA METAR API client (Pa→mb conversion, validation)
+│   │   └── metar.ts             # NOAA METAR API client (SLP-priority, Pa→mb conversion, validation)
 │   ├── calculations/
 │   │   └── gradient.ts          # Pressure calculations
 │   ├── data/
-│   │   └── locations.ts         # Shared file system utilities (readLocationsFile, writeLocationsFile)
+│   │   ├── locations.ts         # Shared file system utilities (readLocationsFile, writeLocationsFile)
+│   │   └── pressure-history.ts  # 24-hour pressure history persistence (read/write/merge/prune/enrich)
 │   └── utils.ts                 # Utility functions
 │
 ├── data/
-│   └── locations.json           # 25 verified METAR station configs + settings (home, dashboard, apiRefreshInterval)
+│   ├── locations.json           # 25 verified METAR station configs + settings (home, dashboard, apiRefreshInterval)
+│   └── pressure-history.json    # Persistent 24-hour pressure readings for all stations
 │
 ├── types/
 │   └── location.ts              # TypeScript definitions (Location, PressureReading, PressureGradient, LocationSettings)
@@ -280,7 +284,7 @@ All planned features have been successfully implemented and the application is r
 1. **CSS Linter Warnings**: Tailwind directives show warnings in VS Code (expected, not actual errors)
 2. **Source Map Warnings**: Next.js Turbopack shows source map parsing warnings (non-critical)
 3. **Add Location UI**: Backend complete, frontend form not implemented (can add via API)
-4. **No Historical Charts**: Recharts installed but not used (future enhancement)
+4. ~~No Historical Charts~~: Resolved — 24-hour pressure history is now persistently stored and displayed in trend charts
 5. **Fixed API Refresh**: API refresh interval is fixed at 5 minutes for build stability (setting stored but not dynamically applied)
 
 ## How to Use
@@ -368,4 +372,4 @@ The application is ready for:
 **Lines of Code**: ~3,700+
 **Technologies**: Next.js 16.0.7 (Turbopack), React 19, TypeScript, Tailwind CSS, shadcn/ui, NOAA Weather API (METAR), Docker
 **Version**: 1.5.4
-**Last Updated**: February 7, 2026
+**Last Updated**: February 11, 2026

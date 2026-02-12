@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchMSLPForLocationsSettled } from "@/lib/api/metar";
 import { readLocationsFile } from "@/lib/data/locations";
+import {
+  persistReadings,
+  enrichReadingsWithHistory,
+} from "@/lib/data/pressure-history";
 import { Location } from "@/types/location";
 
 export const dynamic = 'force-dynamic';
@@ -36,6 +40,12 @@ export async function GET(request: NextRequest) {
     const successData = results
       .filter((r) => r.status === "success" && r.data)
       .map((r) => r.data!);
+
+    // Persist to 24-hour history and enrich time series
+    if (successData.length > 0) {
+      const history = await persistReadings(successData);
+      enrichReadingsWithHistory(successData, history);
+    }
 
     const errors = results
       .filter((r) => r.status === "error")

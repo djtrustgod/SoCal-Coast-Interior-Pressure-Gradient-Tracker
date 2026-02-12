@@ -136,8 +136,6 @@ LICENSE
 Create `docker-compose.yml` for easier container management:
 
 ```yaml
-version: '3.8'
-
 services:
   pressure-tracker:
     build:
@@ -147,8 +145,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # CRITICAL: Mount data directory for persistence
-      - ./data:/app/data
+      # CRITICAL: Use a Docker-managed named volume for persistence
+      # This keeps Docker data COMPLETELY SEPARATE from the local Git repo
+      - pressure-tracker-data:/app/data
     environment:
       - NODE_ENV=production
     restart: unless-stopped
@@ -158,6 +157,12 @@ services:
       timeout: 10s
       retries: 3
       start_period: 10s
+
+# Named volumes for persistent data storage
+# Data is stored in Docker's managed volume directory, isolated from repo
+volumes:
+  pressure-tracker-data:
+    driver: local
 ```
 
 ---
@@ -177,11 +182,12 @@ docker-compose build
 ### Run the Container
 
 ```bash
-# Using Docker directly (with volume mount for data persistence)
+# Using Docker directly (with named volume for data persistence)
+# NEVER bind-mount ./data from the repo — use a named volume instead
 docker run -d \
   --name socal-pressure-tracker \
   -p 3000:3000 \
-  -v $(pwd)/data:/app/data \
+  -v pressure-tracker-data:/app/data \
   socal-pressure-tracker
 
 # Using Docker Compose (recommended)
@@ -224,9 +230,61 @@ docker-compose up -d --build
 
 ⚠️ **Critical**: The `data/locations.json` file is read AND written at runtime. Location changes made through the UI modify this file.
 
-- **Always use a volume mount** (`-v ./data:/app/data`) to persist data
+- **Always use a named volume** (`-v pressure-tracker-data:/app/data`) to persist data
 - Without the volume, any location changes will be lost when the container restarts
-- The initial `data/locations.json` from the repo serves as the default configuration
+- The Dockerfile `COPY`s the initial `data/locations.json` into the image at build time as seed data
+- On first run, Docker populates the named volume from the image's `/app/data` contents
+- Subsequent container restarts reuse the volume data (preserving runtime changes)
+
+### Repo Isolation (CRITICAL)
+
+🚨 **Docker deployments must NEVER use bind mounts to the local Git repository.**
+
+Using `./data:/app/data` (a bind mount) creates a two-way link between the container and the repo's `data/` folder. This causes serious problems:
+
+- **Development changes leak into production**: Editing data files on a feature branch immediately affects the running Docker container
+- **Docker writes pollute the repo**: Runtime changes made through the app UI modify files tracked by Git, creating unexpected diffs
+- **Branch conflicts**: Different branches may use different data files or schemas (e.g., `locations.json` vs `locations2.json`), and a bind mount ties Docker to whatever is currently checked out
+
+**Always use Docker-managed named volumes instead:**
+
+| Approach | Volume Syntax | Data Location | Repo Isolated? |
+|----------|--------------|---------------|----------------|
+| ✅ Named volume | `pressure-tracker-data:/app/data` | Docker-managed directory | Yes |
+| ❌ Bind mount | `./data:/app/data` | Repo's `data/` folder | **No** |
+
+To inspect or back up data in a named volume:
+```bash
+# List volume contents
+docker run --rm -v pressure-tracker-data:/data alpine ls -la /data
+
+# Copy data out of the volume
+docker cp socal-pressure-tracker:/app/data/locations.json ./backup-locations.json
+
+# Reset volume to image defaults (destructive)
+docker-compose down -v
+docker-compose up -d
+```
+
+### PowerShell File Encoding Warning
+
+⚠️ **Never use PowerShell's `>` redirect operator to write files that Docker will read.**
+
+PowerShell's `>` (and `Out-File` without explicit encoding) writes files as **UTF-16 LE with BOM** (`FF FE` header, null bytes between characters). Node.js expects UTF-8 and will fail with:
+
+```
+SyntaxError: Unexpected token '�', "��{..." is not valid JSON
+```
+
+**Safe alternatives when writing files from PowerShell:**
+```powershell
+# Option 1: Out-File with explicit UTF-8 (no BOM)
+git show main:data/locations.json | Out-File -FilePath data\locations.json -Encoding utf8NoBOM
+
+# Option 2: .NET API for guaranteed UTF-8 without BOM
+$content = Get-Content "data\locations.json" -Raw
+[System.IO.File]::WriteAllText("$PWD\data\locations.json", $content, [System.Text.UTF8Encoding]::new($false))
+```
 
 ### Port Configuration
 

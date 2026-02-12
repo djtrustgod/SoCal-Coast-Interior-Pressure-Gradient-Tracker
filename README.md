@@ -21,7 +21,8 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 - 🔁 **Auto-Refresh Dashboard**: Dashboard automatically refreshes every 5 minutes in the browser
 - ⚙️ **Configurable API Refresh**: Set API data refresh interval from 1 to 60 minutes
 - 🕐 **Timezone-Aware Timestamps**: All timestamps automatically converted to your local timezone
-- 💾 **Persistent Storage**: JSON-based data storage for location configurations
+- 💾 **Persistent Storage**: JSON-based data storage for location configurations and 24-hour pressure history
+- 📦 **24-Hour Pressure History**: Persistent accumulation of hourly MSLP readings for all 25 stations, surviving server restarts
 - ⏱️ **Smart Data Updates**: Data cached with configurable revalidation (default 5 minutes), shows current hour readings
 - 🛡️ **Resilient Data Fetching**: Individual station failures don't break the entire dashboard — failed stations are reported gracefully
 
@@ -126,10 +127,12 @@ Navigate to the Settings (gear icon) to:
 │   ├── calculations/
 │   │   └── gradient.ts      # Pressure gradient calculations
 │   ├── data/
-│   │   └── locations.ts     # Shared file reader utilities for locations.json
+│   │   ├── locations.ts     # Shared file reader utilities for locations.json
+│   │   └── pressure-history.ts # 24-hour pressure history persistence (read/write/merge/prune)
 │   └── utils.ts             # Utility functions
 ├── data/
-│   └── locations.json       # Location configurations
+│   ├── locations.json       # Location configurations
+│   └── pressure-history.json # Persistent 24-hour pressure readings for all stations
 ├── types/
 │   └── location.ts          # TypeScript type definitions
 └── public/                  # Static assets

@@ -5,6 +5,10 @@ import { Footer } from "@/components/footer";
 import { LocationSelector } from "@/components/location-selector";
 import { DashboardContent } from "@/components/dashboard-content";
 import { readLocationsFile } from "@/lib/data/locations";
+import {
+  persistReadings,
+  enrichReadingsWithHistory,
+} from "@/lib/data/pressure-history";
 import { Location, PressureReading } from "@/types/location";
 
 // Force dynamic rendering to ensure fresh data on refresh
@@ -45,6 +49,31 @@ export default async function Home({
     } else {
       failedStations.push(result.locationName);
     }
+  }
+
+  // Persist fresh readings to the 24-hour history store, then enrich
+  // each reading's timeSeries with the full accumulated history.
+  const successfulReadings = [...readingsByLocation.values()];
+  const history = await persistReadings(successfulReadings);
+  enrichReadingsWithHistory(successfulReadings, history);
+
+  // Fire-and-forget: fetch remaining locations to build their history too.
+  // This does NOT block the page render.
+  const fetchedIds = new Set(allLocations.map((l) => l.id));
+  const remainingLocations = locations.filter((l) => !fetchedIds.has(l.id));
+  if (remainingLocations.length > 0) {
+    fetchMSLPForLocationsSettled(remainingLocations)
+      .then((bgResults) => {
+        const bgReadings = bgResults
+          .filter((r): r is typeof r & { data: PressureReading } => r.status === "success" && !!r.data)
+          .map((r) => r.data);
+        if (bgReadings.length > 0) {
+          return persistReadings(bgReadings);
+        }
+      })
+      .catch((err) => {
+        console.warn("[Background fetch] Error seeding remaining locations:", err);
+      });
   }
 
   const homePressure = readingsByLocation.get(homeLocation.id);

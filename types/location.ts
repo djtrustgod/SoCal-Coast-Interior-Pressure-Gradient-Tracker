@@ -44,3 +44,20 @@ export interface LocationSettings {
   dashboardLocationIds: string[];
   apiRefreshInterval: number; // in seconds
 }
+
+/**
+ * A single hourly pressure reading stored in the persistent history file.
+ */
+export interface PressureHistoryEntry {
+  timestamp: string; // ISO 8601
+  pressure: number; // in mb (millibars / hPa)
+  temperature?: number; // in Celsius
+}
+
+/**
+ * Schema for the pressure-history.json file.
+ * Keys are location IDs, values are sorted arrays of hourly readings.
+ */
+export interface PressureHistoryFile {
+  [locationId: string]: PressureHistoryEntry[];
+}

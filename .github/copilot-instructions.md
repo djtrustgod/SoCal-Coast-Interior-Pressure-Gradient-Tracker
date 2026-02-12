@@ -143,6 +143,45 @@ data/              # JSON data files
 - **Enum vs Union Types**: Prefer union types (`"coast" | "interior"`) over enums
 - **Interface vs Type**: Use interfaces for object shapes, types for unions/intersections
 
+## Branch Awareness and Context
+
+**CRITICAL**: When working on any branch other than `main`, always understand the differences between the current branch and `main` before making assumptions about shared infrastructure (Docker, CI/CD, production deployments).
+
+### Key Principles
+
+1. **Identify the current branch first.** Before making changes that affect deployment, data files, or shared infrastructure, run `git branch` or check the repository attachment to confirm which branch you are on.
+
+2. **Never assume the current branch's code runs in Docker.** Docker deployments are built from released versions on `main`. The current development branch may use entirely different APIs, schemas, data files, or dependencies than what Docker is running.
+
+3. **Main branch is the source of truth for production.** If the current branch introduces a new API (e.g., METAR replacing Open-Meteo), new schema fields (e.g., `icaoCode`), or new data files (e.g., `locations2.json`), those changes do NOT exist on `main` until merged.
+
+4. **Check main branch state when needed.** Use `git show main:<filepath>` or `git diff main -- <filepath>` to understand what the main branch contains before drawing conclusions about compatibility or breakage.
+
+5. **Data file isolation between branches.** Different branches may use different data files or schemas:
+   - `main` branch: Uses `data/locations.json` (may have a different schema than the current branch)
+   - Feature branches: May use alternate data files (e.g., `data/locations2.json`) to avoid conflicts with Docker or production
+   - The file referenced in `lib/data/locations.ts` determines which file the app reads at runtime
+
+### Common Branch-Related Mistakes to Avoid
+
+- ❌ Assuming Docker uses the same API client as the current branch
+- ❌ Flagging schema mismatches between branches as "critical issues" when they are expected divergences
+- ❌ Modifying `main`-branch data files based on current-branch requirements
+- ❌ Conflating the current branch's `Dockerfile` or `docker-compose.yml` behavior with what is actually deployed
+- ✅ Always ask: "Which branch does this infrastructure component run from?"
+- ✅ Use `git log --oneline main..HEAD` to see what has changed since branching from `main`
+
+### Branch-Specific Configuration
+
+When the project uses branch-specific configuration (e.g., different data files per branch), document the mapping clearly:
+
+| Branch | Data File | API Source | Schema |
+|--------|-----------|------------|--------|
+| `main` | `data/locations.json` | Open-Meteo | No `icaoCode` field |
+| `2.0`  | `data/locations2.json` | NOAA METAR | Includes `icaoCode` field |
+
+**Update this table** whenever a new branch introduces data or API divergence.
+
 ## API Integration Details
 
 ### NOAA Weather API (METAR)

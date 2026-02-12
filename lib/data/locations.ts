@@ -5,7 +5,7 @@ import { LocationSettings } from "@/types/location";
 export const locationsFilePath = path.join(
   process.cwd(),
   "data",
-  "locations.json"
+  "locations2.json"
 );
 
 export async function readLocationsFile(): Promise<LocationSettings> {
