@@ -224,7 +224,9 @@ All planned features have been successfully implemented and the application is r
 1. Development server running on http://localhost:3000
 2. Dashboard displays pressure gradients with current hour data
 3. **24-hour pressure trend charts** for each comparison location with interactive tooltips
-4. **Dual-line charts** showing both home and comparison location trends for visual gradient analysis
+4. **Gradient in chart tooltips** — hovering over the timeline shows both pressures plus the computed gradient (home − compare) with color coding (blue = onshore, orange = offshore)
+5. **Per-series limited data warnings** — individual stations with fewer than 6 data points show a warning instead of a misleading sparse chart
+6. **Dual-line charts** showing both home and comparison location trends for visual gradient analysis
 5. **Theme-aware charts** automatically adapt to light/dark mode with appropriate colors
 6. **Auto-refresh dashboard every 5 minutes** using useEffect and setInterval
 7. **Manual refresh button with spinning animation**

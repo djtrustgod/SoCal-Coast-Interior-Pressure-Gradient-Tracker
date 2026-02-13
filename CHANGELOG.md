@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Custom chart tooltip that displays both station pressures and the computed gradient (home − compare) on hover, with color coding: blue for onshore (>+0.5 mb), orange for offshore (<−0.5 mb), neutral otherwise
+- Per-series limited data warnings on pressure trend charts — each station line individually warns when it has fewer than 6 hourly data points instead of a single blanket warning
 - 24-hour persistent pressure history storage (`data/pressure-history.json`) that accumulates hourly MSLP readings for all 25 stations
 - New `lib/data/pressure-history.ts` module with read, write, merge, prune, and enrich functions
 - `PressureHistoryEntry` and `PressureHistoryFile` type definitions in `types/location.ts`

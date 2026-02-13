@@ -12,6 +12,8 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 - 🌡️ **Real-time MSLP Data**: Fetches current pressure data from NOAA METAR airport observations
 - 📊 **Pressure Gradient Visualization**: Displays pressure differences between home location and up to 3 comparison locations
 - 📈 **24-Hour Pressure Trend Graphs**: Interactive line charts showing pressure trends over the past 24 hours for each location
+- 📐 **Gradient on Hover**: Chart tooltips display the computed pressure gradient (home − compare) with color coding for onshore/offshore flow
+- ⚠️ **Limited Data Warnings**: Per-station warnings when a location has fewer than 6 hourly data points (e.g., history still building)
 - 🎨 **Modern UI**: Clean, responsive design with light/dark theme support
 - 📍 **25 Verified METAR Stations**: All locations are verified airport METAR reporting stations with ICAO codes
 - ⚙️ **Location Management**: Add, edit, and delete locations (max 25)

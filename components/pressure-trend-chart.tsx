@@ -83,7 +83,7 @@ export function PressureTrendChart({
   const compareDataPoints = compareByHour.size;
   const homeDataPoints = homeByHour.size;
 
-  // Prepare chart data aligned by hour
+  // Prepare chart data aligned by hour, including gradient where both series exist
   const chartData = sortedHours.map((hourKey) => {
     const dataPoint: Record<string, string | number | undefined> = {
       time: hourKey,
@@ -93,6 +93,10 @@ export function PressureTrendChart({
     }
     if (homeByHour.has(hourKey)) {
       dataPoint.homeLocation = homeByHour.get(hourKey);
+    }
+    // Compute gradient (home - compare) when both values exist at this hour
+    if (dataPoint.homeLocation !== undefined && dataPoint.compareLocation !== undefined) {
+      dataPoint.gradient = (dataPoint.homeLocation as number) - (dataPoint.compareLocation as number);
     }
     return dataPoint;
   });
@@ -168,22 +172,50 @@ export function PressureTrendChart({
             tickFormatter={(value) => value.toFixed(0)}
           />
           <Tooltip
-            formatter={formatTooltip}
-            labelFormatter={(label) => {
+            content={({ active, payload, label }) => {
+              if (!active || !payload || payload.length === 0) return null;
               const date = new Date(label);
-              return date.toLocaleString(undefined, {
+              const timeLabel = date.toLocaleString(undefined, {
                 month: "short",
                 day: "numeric",
                 hour: "numeric",
                 minute: "2-digit",
                 timeZoneName: "short",
               });
-            }}
-            contentStyle={{
-              backgroundColor: colors.background,
-              border: `1px solid ${colors.grid}`,
-              borderRadius: "6px",
-              color: colors.text,
+              const dataPoint = payload[0]?.payload;
+              const gradient = dataPoint?.gradient as number | undefined;
+              return (
+                <div
+                  style={{
+                    backgroundColor: colors.background,
+                    border: `1px solid ${colors.grid}`,
+                    borderRadius: "6px",
+                    color: colors.text,
+                    padding: "8px 12px",
+                    fontSize: "12px",
+                  }}
+                >
+                  <p style={{ marginBottom: 4, fontWeight: 600 }}>{timeLabel}</p>
+                  {payload.map((entry, i) => (
+                    <p key={i} style={{ color: entry.color, margin: "2px 0" }}>
+                      {entry.name}: {entry.value !== undefined ? `${(entry.value as number).toFixed(1)} mb` : "N/A"}
+                    </p>
+                  ))}
+                  {gradient !== undefined && (
+                    <p style={{
+                      marginTop: 4,
+                      paddingTop: 4,
+                      borderTop: `1px solid ${colors.grid}`,
+                      fontWeight: 600,
+                      color: gradient > 0.5 ? (isDark ? "#60a5fa" : "#3b82f6")
+                           : gradient < -0.5 ? (isDark ? "#f97316" : "#ea580c")
+                           : colors.text,
+                    }}>
+                      Gradient: {gradient > 0 ? "+" : ""}{gradient.toFixed(1)} mb
+                    </p>
+                  )}
+                </div>
+              );
             }}
           />
           {homeTimeSeries && (

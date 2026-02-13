@@ -181,26 +181,6 @@
       "elevation": -22
     },
     {
-      "id": "lgb",
-      "name": "Long Beach",
-      "code": "LGB",
-      "icaoCode": "KLGB",
-      "latitude": 33.8176,
-      "longitude": -118.1516,
-      "type": "coast",
-      "elevation": 18
-    },
-    {
-      "id": "riv",
-      "name": "Riverside",
-      "code": "RIV",
-      "icaoCode": "KRIV",
-      "latitude": 33.9519,
-      "longitude": -117.3962,
-      "type": "interior",
-      "elevation": 253
-    },
-    {
       "id": "sbd",
       "name": "San Bernardino",
       "code": "SBD",
@@ -209,16 +189,6 @@
       "longitude": -117.2352,
       "type": "interior",
       "elevation": 348
-    },
-    {
-      "id": "sjc",
-      "name": "San Jose",
-      "code": "SJC",
-      "icaoCode": "KSJC",
-      "latitude": 37.3639,
-      "longitude": -121.9289,
-      "type": "interior",
-      "elevation": 18
     },
     {
       "id": "yum",
@@ -251,7 +221,7 @@
       "elevation": 1653
     }
   ],
-  "homeLocationId": "sna",
+  "homeLocationId": "lax",
   "dashboardLocationIds": [
     "dag",
     "las",
