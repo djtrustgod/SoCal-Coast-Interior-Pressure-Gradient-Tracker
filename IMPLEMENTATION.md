@@ -11,7 +11,7 @@ All planned features have been successfully implemented and the application is r
 - ✅ **Tailwind CSS + shadcn/ui** - Beautiful, responsive UI with light/dark themes
 - ✅ **Recharts Integration** - Interactive, responsive pressure trend charts with theme support
 - ✅ **JSON-based storage** - Simple, persistent location configuration
-- ✅ **Open-Meteo API integration** - Free weather data, no API key needed, 24-hour time series data
+- ✅ **NOAA METAR API integration** - Real airport observation data with ICAO codes, pressure validation (950-1050 mb), true MSLP (seaLevelPressure) preferred over altimeter setting
 - ✅ **Configurable Data Refresh** - User-configurable API refresh interval (1-60 minutes)
 - ✅ **Auto-Refresh Dashboard** - Browser automatically refreshes every 5 minutes
 
@@ -74,11 +74,13 @@ All planned features have been successfully implemented and the application is r
 ### Technical Implementation
 
 #### Data Layer
-- **24 Pre-configured Locations**: Santa Ana, Santa Barbara, Santa Maria, Barstow, Daggett, LAX, Burbank, Ontario, Palm Springs, San Diego, Carlsbad, Santa Monica, Van Nuys, Oxnard, Bakersfield, San Luis Obispo, Visalia, El Centro, Indio, Long Beach, Riverside, San Bernardino, Monterey, San Jose
+- **25 Verified METAR Stations**: Santa Ana (KSNA), Santa Barbara (KSBA), Santa Maria (KSMX), Barstow (KDAG), Las Vegas (KLAS), LAX (KLAX), Burbank (KBUR), Ontario (KONT), Palm Springs (KPSP), San Diego (KSAN), Carlsbad (KCRQ), Santa Monica (KSMO), Van Nuys (KVNY), Oxnard (KOXR), Bakersfield (KBFL), San Luis Obispo (KSBP), Visalia (KVIS), Thermal (KTRM), Long Beach (KLGB), Riverside (KRIV), San Bernardino (KSBD), San Jose (KSJC), Yuma (KYUM), Salt Lake City (KSLC), Tonopah (KTPH)
+
+- **Resilient Data Fetching**: Uses `Promise.allSettled` pattern so a single station failure (e.g., KYUM returning no observations) does not break the entire batch. `fetchMSLPForLocationsSettled()` returns per-station success/error results. The `/api/pressure` endpoint returns partial data with an `errors` array for failed stations. Dashboard shows a yellow warning banner listing any failed stations.
 
 - **Location Types**: 
-  - Coastal: 13 locations
-  - Interior: 11 locations
+  - Coastal: 10 locations
+  - Interior: 15 locations
 
 - **Home Location**: Santa Ana (SNA) - fully configurable via UI
 - **Dashboard Locations**: Santa Barbara, Santa Maria, Daggett (default) - fully configurable via UI (max 3)
@@ -87,18 +89,21 @@ All planned features have been successfully implemented and the application is r
 - **Timestamp Handling**: Fetches 24-hour time series data, extracts current/most recent hour for display, timezone-aware rendering
 - **Time Series Storage**: Each `PressureReading` includes optional `timeSeries` object with arrays of time/pressure/temperature data
 - **Gradient Time Series**: `PressureGradient` objects include optional `homeTimeSeries` and `compareTimeSeries` for chart rendering
+- **24-Hour Persistent History**: `data/pressure-history.json` accumulates hourly MSLP readings for all 25 stations. On each dashboard load, fresh NOAA data is merged in, entries > 24 hours are pruned, and the file is atomically written. Time series on each `PressureReading` is enriched with the full 24-hour store before chart rendering. A module-level mutex prevents concurrent write races.
+- **24-Hour API Window**: Every NOAA METAR fetch includes a `start` parameter set to 24 hours ago, with `limit=500` (API max). This guarantees full 24-hour history on first load, even for high-frequency reporters like KVGT (5-minute intervals). The merge logic de-duplicates by hour, so there is no penalty for overlapping data.
+- **Background Station Seeding**: After rendering the dashboard with home + compare locations, a fire-and-forget fetch retrieves data for all remaining stations and merges it into the history store, ensuring history is pre-built when users change dashboard selections.
 - **Runtime Data Loading**: Locations read from file system at runtime using `fs.readFile()` instead of static imports, ensuring changes are immediately reflected without rebuild
 
 #### Calculations
 - **Pressure Gradient**: Home MSLP - Comparison MSLP
 - **Interpretations**:
-  - Strong Offshore: > +5 hPa (red)
-  - Moderate Offshore: +2 to +5 hPa (orange)
-  - Weak Offshore: +0.5 to +2 hPa (yellow)
-  - Neutral: -0.5 to +0.5 hPa (gray)
-  - Weak Onshore: -2 to -0.5 hPa (blue)
-  - Moderate Onshore: -5 to -2 hPa (cyan)
-  - Strong Onshore: < -5 hPa (indigo)
+  - Strong Onshore: > +5 mb (blue)
+  - Moderate Onshore: +2 to +5 mb (blue)
+  - Weak Onshore: +0.5 to +2 mb (muted)
+  - Neutral: -0.5 to +0.5 mb (muted)
+  - Weak Offshore: -2 to -0.5 mb (muted)
+  - Moderate Offshore: -5 to -2 mb (orange)
+  - Strong Offshore: < -5 mb (red)
 
 #### UI Components
 - Card: Location and gradient display
@@ -111,7 +116,7 @@ All planned features have been successfully implemented and the application is r
 - Header: Navigation and settings
 - **Dashboard Content**: Client component with refresh functionality
 - **Gradient Card**: Pressure difference visualization with timezone-aware timestamps and trend charts
-- **Pressure Trend Chart**: Line chart component displaying historical data up to current hour, filters out future forecasts, light/dark theme support, responsive design, dual-line option for home vs. comparison
+- **Pressure Trend Chart**: Line chart component displaying historical data up to current hour, filters out future forecasts, light/dark theme support, responsive design, dual-line option for home vs. comparison. Aligns time series by rounding METAR timestamps to nearest hour so both lines always appear regardless of station reporting offsets. Explicit Y-axis domain with 1 mb padding ensures both series are visible.
 - **Edit Location Dialog**: Modal form for editing location details
 
 ### File Structure Created
@@ -147,20 +152,23 @@ All planned features have been successfully implemented and the application is r
 │
 ├── lib/
 │   ├── api/
-│   │   └── open-meteo.ts        # Weather API client
+│   │   └── metar.ts             # NOAA METAR API client (SLP-priority, Pa→mb conversion, validation)
 │   ├── calculations/
 │   │   └── gradient.ts          # Pressure calculations
 │   ├── data/
-│   │   └── locations.ts         # Shared file system utilities (readLocationsFile, writeLocationsFile)
+│   │   ├── locations.ts         # Shared file system utilities (readLocationsFile, writeLocationsFile)
+│   │   └── pressure-history.ts  # 24-hour pressure history persistence (read/write/merge/prune/enrich)
 │   └── utils.ts                 # Utility functions
 │
 ├── data/
-│   └── locations.json           # 25 location configs + settings (home, dashboard, apiRefreshInterval)
+│   ├── locations.json           # 25 verified METAR station configs + settings (home, dashboard, apiRefreshInterval)
+│   └── pressure-history.json    # Persistent 24-hour pressure readings for all stations
 │
 ├── types/
 │   └── location.ts              # TypeScript definitions (Location, PressureReading, PressureGradient, LocationSettings)
 │
-├── public/                      # Static assets (empty)
+├── public/
+│   └── favicon.svg              # Green leaf SVG favicon
 │
 ├── Configuration Files
 │   ├── .env.local.example       # Environment variables template
@@ -217,7 +225,9 @@ All planned features have been successfully implemented and the application is r
 1. Development server running on http://localhost:3000
 2. Dashboard displays pressure gradients with current hour data
 3. **24-hour pressure trend charts** for each comparison location with interactive tooltips
-4. **Dual-line charts** showing both home and comparison location trends for visual gradient analysis
+4. **Gradient in chart tooltips** — hovering over the timeline shows both pressures plus the computed gradient (home − compare) with color coding (blue = onshore, orange = offshore)
+5. **Per-series limited data warnings** — individual stations with fewer than 6 data points show a warning instead of a misleading sparse chart
+6. **Dual-line charts** showing both home and comparison location trends for visual gradient analysis
 5. **Theme-aware charts** automatically adapt to light/dark mode with appropriate colors
 6. **Auto-refresh dashboard every 5 minutes** using useEffect and setInterval
 7. **Manual refresh button with spinning animation**
@@ -232,7 +242,7 @@ All planned features have been successfully implemented and the application is r
 16. Theme toggle (light/dark) functional
 17. Location management page with full CRUD operations
 18. API endpoints responding correctly (GET/POST/PATCH/PUT/DELETE)
-19. Data fetching from Open-Meteo API with proper hour selection and time series
+19. Data fetching from NOAA METAR API with ICAO station codes and pressure validation
 20. JSON storage working with homeLocationId, dashboardLocationIds, and apiRefreshInterval
 21. Responsive design implemented including chart responsiveness
 22. Automatic removal of deleted locations from dashboard list
@@ -277,7 +287,7 @@ All planned features have been successfully implemented and the application is r
 1. **CSS Linter Warnings**: Tailwind directives show warnings in VS Code (expected, not actual errors)
 2. **Source Map Warnings**: Next.js Turbopack shows source map parsing warnings (non-critical)
 3. **Add Location UI**: Backend complete, frontend form not implemented (can add via API)
-4. **No Historical Charts**: Recharts installed but not used (future enhancement)
+4. ~~No Historical Charts~~: Resolved — 24-hour pressure history is now persistently stored and displayed in trend charts
 5. **Fixed API Refresh**: API refresh interval is fixed at 5 minutes for build stability (setting stored but not dynamically applied)
 
 ## How to Use
@@ -363,6 +373,6 @@ The application is ready for:
 **Project Status**: ✅ COMPLETE AND FULLY FEATURED
 **Build Time**: Initial ~15 minutes + Enhancements ~3 hours
 **Lines of Code**: ~3,700+
-**Technologies**: Next.js 16.0.7 (Turbopack), React 19, TypeScript, Tailwind CSS, shadcn/ui, Open-Meteo API, Docker
-**Version**: 1.5.1
-**Last Updated**: January 1, 2026
+**Technologies**: Next.js 16.0.7 (Turbopack), React 19, TypeScript, Tailwind CSS, shadcn/ui, NOAA Weather API (METAR), Docker
+**Version**: 1.5.4
+**Last Updated**: February 11, 2026

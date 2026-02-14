@@ -9,7 +9,7 @@ export function Header() {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         <Link href="/" className="hover:opacity-80 transition-opacity">
           <div>
-            <h1 className="text-2xl font-bold">SoCal Pressure Gradient</h1>
+            <h1 className="text-2xl font-bold">SoCal Pressure Gradient 🍃</h1>
             <p className="text-sm text-muted-foreground">
               Coast-Interior MSLP Tracker
             </p>

@@ -11,9 +11,10 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # CRITICAL: Mount data directory for persistence
+      # CRITICAL: Named volume for persistence (Docker-managed, separate from repo)
       # This preserves location configurations across container restarts
-      - ./data:/app/data
+      # Data is stored in Docker's volume directory, not the local repository
+      - pressure-tracker-data:/app/data
     environment:
       - NODE_ENV=production
       - PORT=3000
@@ -42,3 +43,9 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+
+# Named volumes for persistent data storage
+# Data is stored in Docker's managed volume directory, isolated from repo
+volumes:
+  pressure-tracker-data:
+    driver: local

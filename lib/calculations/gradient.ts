@@ -65,31 +65,31 @@ export function interpretGradient(gradient: number): {
     return {
       label: "Strong Onshore Flow",
       description: "High pressure over coast, strong gradient toward land",
-      color: "text-indigo-600 dark:text-indigo-400",
+      color: "text-blue-600 dark:text-blue-400",
     };
   } else if (gradient > 2) {
     return {
       label: "Moderate Onshore Flow",
       description: "Moderate pressure gradient favoring onshore winds",
-      color: "text-cyan-600 dark:text-cyan-400",
+      color: "text-blue-500 dark:text-blue-300",
     };
   } else if (gradient > 0.5) {
     return {
       label: "Weak Onshore Flow",
       description: "Slight pressure gradient toward land",
-      color: "text-blue-600 dark:text-blue-400",
+      color: "text-muted-foreground",
     };
   } else if (gradient > -0.5) {
     return {
       label: "Neutral",
       description: "Minimal pressure gradient",
-      color: "text-gray-600 dark:text-gray-400",
+      color: "text-muted-foreground",
     };
   } else if (gradient > -2) {
     return {
       label: "Weak Offshore Flow",
       description: "Slight pressure gradient toward coast",
-      color: "text-yellow-600 dark:text-yellow-400",
+      color: "text-muted-foreground",
     };
   } else if (gradient > -5) {
     return {
@@ -110,7 +110,7 @@ export function interpretGradient(gradient: number): {
  * Format pressure value for display
  */
 export function formatPressure(pressure: number): string {
-  return `${pressure.toFixed(1)} hPa`;
+  return `${pressure.toFixed(1)} mb`;
 }
 
 /**
@@ -118,5 +118,5 @@ export function formatPressure(pressure: number): string {
  */
 export function formatGradient(gradient: number): string {
   const sign = gradient >= 0 ? "+" : "";
-  return `${sign}${gradient.toFixed(2)} hPa`;
+  return `${sign}${gradient.toFixed(2)} mb`;
 }

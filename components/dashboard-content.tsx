@@ -13,12 +13,14 @@ interface DashboardContentProps {
   homeLocation: Location;
   homePressure: PressureReading;
   gradients: PressureGradient[];
+  failedStations?: string[];
 }
 
 export function DashboardContent({
   homeLocation,
   homePressure,
   gradients,
+  failedStations,
 }: DashboardContentProps) {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const router = useRouter();
@@ -44,6 +46,11 @@ export function DashboardContent({
 
   return (
     <>
+      {failedStations && failedStations.length > 0 && (
+        <div className="mb-4 rounded-md border border-yellow-500/50 bg-yellow-500/10 px-4 py-3 text-sm text-yellow-600 dark:text-yellow-400">
+          <strong>Warning:</strong> Could not fetch data for: {failedStations.join(", ")}. These stations may be temporarily unavailable.
+        </div>
+      )}
       <div className="mb-6">
         <Card>
           <CardHeader>
@@ -51,7 +58,7 @@ export function DashboardContent({
               <div>
                 <CardTitle>Home Location: {homeLocation.name}</CardTitle>
                 <CardDescription>
-                  Current MSLP: {homePressure.pressure.toFixed(1)} hPa
+                  Current MSLP: {homePressure.pressure.toFixed(1)} mb
                   <br />
                   Last Updated: {new Date(homePressure.timestamp).toLocaleString(undefined, {
                     month: 'short',

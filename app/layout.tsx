@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: "SoCal Pressure Gradient Tracker",
   description:
     "Track Mean Sea Level Pressure differences between coastal and interior Southern California locations",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({

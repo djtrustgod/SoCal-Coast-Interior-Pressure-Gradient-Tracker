@@ -7,6 +7,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- NOAA METAR API `start` parameter: every fetch now requests observations from the past 24 hours with `limit=500`, guaranteeing full chart data on first load even for high-frequency stations like KVGT
+- `FetchMSLPOptions` interface in `lib/api/metar.ts` for passing optional `start` time to fetch functions
+- Custom chart tooltip that displays both station pressures and the computed gradient (home − compare) on hover, with color coding: blue for onshore (>+0.5 mb), orange for offshore (<−0.5 mb), neutral otherwise
+- Per-series limited data warnings on pressure trend charts — each station line individually warns when it has fewer than 6 hourly data points instead of a single blanket warning
+- 24-hour persistent pressure history storage (`data/pressure-history.json`) that accumulates hourly MSLP readings for all 25 stations
+- New `lib/data/pressure-history.ts` module with read, write, merge, prune, and enrich functions
+- `PressureHistoryEntry` and `PressureHistoryFile` type definitions in `types/location.ts`
+- Background station seeding: dashboard fire-and-forget fetches all remaining stations to pre-build history
+- Module-level mutex for thread-safe concurrent writes to the history file
+- Atomic file writes (write to `.tmp` then rename) for pressure history persistence
+- Pressure history file copied into Docker image alongside `locations.json`
+
+### Changed
+
+- METAR API `limit` increased from 25 to 48 observations for better 24-hour coverage and gap recovery
+- Dashboard server component (`app/page.tsx`) now persists fresh readings and enriches time series with full 24-hour history
+- Pressure API route (`app/api/pressure/route.ts`) now merges readings into persistent history store
+- `PressureTrendChart` warning threshold lowered from 12 to 6 data points with "building history" message
+
+### Fixed
+
+- Fix gradient color coding so only significant gradients are visually highlighted
+  - Weak Onshore, Neutral, and Weak Offshore now use muted foreground color instead of vivid blue/yellow
+  - Moderate gradients use orange (offshore) or medium blue (onshore)
+  - Strong gradients use red (offshore) or bold blue (onshore)
+  - Previously, Weak Offshore Flow displayed in attention-grabbing yellow despite being a minor gradient
+- Add `./lib/**` to Tailwind CSS content paths so utility classes in `lib/` files (e.g., gradient colors) are properly generated
+  - Previously, dynamic color classes like `text-orange-600` defined in `lib/calculations/gradient.ts` were silently dropped by Tailwind JIT, rendering as default white text
+- Ensure displayed pressures are true MSLP (Sea Level Pressure) instead of altimeter setting
+- METAR client now prioritizes `seaLevelPressure` field over `barometricPressure` (altimeter) for both current readings and time series
+- Eliminates 0.3-1.3 mb systematic error at higher-elevation stations (e.g., Barstow KDAG was 1.2 mb off)
+- Time series charts now use SLP-only data points for accuracy; falls back to altimeter only if no SLP data available
+- Fix pressure trend charts not showing home location (Santa Ana) line consistently across dashboard cards
+- Align home and compare time series by rounding METAR timestamps to nearest hour instead of requiring exact timestamp match at same array index
+- Compute explicit Y-axis domain from both data series with 1 mb padding so both lines are always visible and in range
+- Add `connectNulls` to chart lines so occasional hourly gaps don't break the line rendering
+- Fix single METAR station failure (e.g., Yuma/KYUM) causing all pressure data fetches to fail
+- Replace `Promise.all` with `Promise.allSettled` pattern in `fetchMSLPForLocations` so individual station errors are isolated
+- Pressure API (`/api/pressure`) now returns partial results with per-station error details instead of a blanket 500 error
+- Dashboard gracefully handles individual station failures, showing data for available stations and a warning banner for failed ones
+
+### Changed
+
+- E2E testing approach updated: test runner prompt removed, test plan retained as reference only
+- Remove `@playwright/test` from devDependencies (not currently used for automated testing)
+
+### Added
+
+- Known Issues & Lessons Learned section added to E2E test plan documenting DOM selector challenges
+- Test Results History section added to E2E test plan with February 2026 initial run data (21/35 passed)
+
+### Removed
+
+- Delete `e2e/` directory and all generated Playwright spec files
+- Delete `.github/prompts/test-playwright-e2e.prompt.md` (test runner prompt)
+
+---
+
+### Added (prior unreleased)
+
+- NOAA Weather API (METAR) integration replacing Open-Meteo grid-based forecasts for real airport observations
+- ICAO code field (`icaoCode`) added to Location type and all 25 location entries
+- New METAR API client at `lib/api/metar.ts` with Pascals-to-millibars conversion and pressure validation (950-1050 mb)
+- Thermal (KTRM) station replacing Indio/Thermal (IPX) which had no valid METAR station
+- SVG favicon with green leaf design
+- 🍃 leaf emoji added to application title in header
+- Favicon metadata in app layout
+- Backward compatibility ID migration in PATCH endpoint (vnr→vny, lbb→lgb)
+- "Limited historical data available" fallback message for trend charts with <12 data points
+
+### Changed
+
+- Data source migrated from Open-Meteo API to NOAA Weather API (METAR observations)
+- Pressure unit display changed from "hPa" to "mb" (millibars) throughout the UI
+- All 25 locations are now verified METAR reporting airports with 4-letter ICAO codes
+- Pressure trend charts now handle variable-length time series from METAR data
+- Location data updated: 25 verified stations (10 coastal, 15 interior) with ICAO codes
+
+### Removed
+
+- Indio/Thermal (IPX) - incorrect station code, replaced by Thermal (KTRM)
+
+### Fixed
+
+- Van Nuys location code corrected from VNR to VNY (KVNY) with proper ICAO code
+- Long Beach location code corrected from LBB to LGB (KLGB) with updated coordinates
+- Old location IDs (vnr, lbb) automatically mapped to new IDs (vny, lgb) in PATCH endpoint for backward compatibility
+
 ## [1.5.4] - 2026-01-19
 
 ### Fixed
