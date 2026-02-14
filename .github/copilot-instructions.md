@@ -2,446 +2,110 @@
 
 ## Project Overview
 
-This is a Next.js 16 web application that tracks and displays Mean Sea Level Pressure (MSLP) differences between coastal and interior Southern California locations. The app helps visualize pressure gradients that indicate offshore vs. onshore wind patterns.
+Next.js 16 app tracking Mean Sea Level Pressure (MSLP) differences between coastal and interior Southern California locations to indicate offshore vs. onshore wind patterns.
 
-**Key Technologies:**
-- **Framework**: Next.js 16 with App Router and Turbopack
-- **Language**: TypeScript (strict mode enabled)
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **Data Source**: NOAA Weather API (METAR observations from verified airport stations)
-- **Data Storage**: JSON file-based storage (`data/locations.json`)
+**Stack**: Next.js 16 (App Router, Turbopack) · TypeScript (strict) · Tailwind CSS + shadcn/ui · NOAA METAR API · JSON file storage (`data/locations2.json` on branch `2.0`)
 
-**Architecture:**
-- Server components by default for better performance
-- Client components only where interactivity is needed (marked with `"use client"`)
-- API routes in `app/api/` directory
-- Zod schema validation for API endpoints
-- File system-based data persistence
-
-## Build, Lint, and Development Commands
+## Commands
 
 ```bash
-# Development server (runs on http://localhost:3000)
-npm run dev
-
-# Production build
-npm run build
-
-# Start production server
-npm run start
-
-# Run ESLint
-npm run lint
-
-# TypeScript type checking (useful in CI/CD)
-npx tsc --noEmit
+npm run dev          # Dev server on localhost:3000
+npm run build        # Production build (run before committing)
+npm run start        # Start production server
+npm run lint         # ESLint
+npx tsc --noEmit     # Type check
 ```
 
-**Important Notes:**
-- Always run `npm run build` before committing to catch TypeScript errors
-- ESLint configuration uses `next/core-web-vitals` preset
-- Use Turbopack for faster development builds (automatic with Next.js 16)
-- TypeScript strict mode is enabled - run `npx tsc --noEmit` to catch type errors
+## Code Conventions
 
-## Code Style and Conventions
+- **TypeScript**: Strict mode, no `any`, use `@/` path alias, interfaces for objects, union types over enums
+- **Components**: Functional only, server components by default, `"use client"` only when hooks/browser APIs/client state needed
+- **Naming**: Components=PascalCase, utilities/types=camelCase, API routes=`route.ts` in named dirs
+- **Styling**: Tailwind utilities, shadcn/ui components, `dark:` variants, semantic colors (`text-muted-foreground`, `bg-background`)
+- **API routes**: Zod validation, `{ success: true, data }` / `{ error: "message" }` responses, try/catch with proper status codes
+- **State**: No global state library — React state + server components. Client state only for UI interactions.
 
-### TypeScript
-- **Strict mode is enabled** - all types must be explicitly defined
-- Use TypeScript interfaces for data structures (see `types/location.ts`)
-- Avoid using `any` type - use proper types or `unknown` with type guards
-- Use path aliases: `@/` refers to the project root (e.g., `@/types/location`)
+## Architecture
 
-### React Components
-- **Functional components only** - no class components
-- Use React 19 features and hooks
-- Default to **server components** - only add `"use client"` when necessary:
-  - When using React hooks (useState, useEffect, etc.)
-  - When using browser APIs
-  - When handling user interactions that require client-side state
-- Props interfaces should be defined inline or at the top of the file
+- Server components fetch data directly; client components handle interactivity
+- API routes in `app/api/` handle CRUD and external API calls
+- JSON file persistence via `fs` (server-side only, never in client components)
+- `lib/data/locations.ts` determines which data file the app reads at runtime
 
-### File Naming
-- Components: PascalCase (e.g., `GradientCard.tsx`)
-- API routes: lowercase with hyphens (e.g., `route.ts` in named directories)
-- Utilities: camelCase (e.g., `gradient.ts`)
-- Types: camelCase (e.g., `location.ts`)
+## Key Pitfalls
 
-### Styling
-- Use Tailwind CSS utility classes
-- Use shadcn/ui components for consistent UI (Button, Card, Dialog, etc.)
-- Support both light and dark themes using `dark:` variants
-- Use semantic color classes (e.g., `text-muted-foreground`, `bg-background`)
+**Next.js 16**: Use `export const dynamic = 'force-dynamic'` on pages/routes needing fresh data. Server components can be async, client cannot. Use `revalidatePath()` after mutations.
 
-### Code Organization
-```
-app/               # Next.js App Router pages and API routes
-  api/             # API endpoints (route.ts files)
-  locations/       # Location management page
-  layout.tsx       # Root layout
-  page.tsx         # Dashboard page (home)
-components/        # React components
-  ui/              # shadcn/ui base components
-  *.tsx            # Custom components
-lib/               # Utility functions and business logic
-  api/             # External API clients
-  calculations/    # Business logic and calculations
-  utils.ts         # Shared utilities
-types/             # TypeScript type definitions
-data/              # JSON data files
-```
+**NOAA API**: No API key needed but User-Agent header required. Pressure arrives in Pascals (÷100 for mb). Validate range 950–1050 mb. Handle failures gracefully — use `Promise.allSettled` so one station failure doesn't break the batch.
 
-## Architecture and Design Patterns
+**Data**: Timestamps in user's local timezone via `toLocaleString()`. Most recent METAR observation used (hourly updates). 24-hour history window via `start` parameter on NOAA fetch.
 
-### Data Flow
-1. **Server Components** fetch data directly in the component
-2. **API Routes** handle CRUD operations and external API calls
-3. **Client Components** handle user interactions and browser-specific features
-4. **JSON Storage** persists configuration (locations, settings)
+## Branch Awareness
 
-### State Management
-- **No global state management library** - use React state and server components
-- Server-side data fetching with automatic revalidation
-- Client-side state only for UI interactions (modals, forms, refresh)
-
-### API Route Patterns
-- Use Zod for request validation
-- Return JSON responses with consistent structure:
-  ```typescript
-  { success: true, data: ... }  // Success
-  { error: "message" }           // Error
-  ```
-- Use appropriate HTTP methods: GET, POST, PATCH, PUT, DELETE
-- Handle errors with try/catch and return appropriate status codes
-
-### Component Patterns
-- **Container/Presentation Pattern**: Separate data fetching (server) from UI (client when needed)
-- **Composition**: Build complex UIs from smaller, reusable components
-- **Props Interface**: Always define explicit prop types
-
-## Common Pitfalls and Gotchas
-
-### Next.js 16 Specific
-- **Dynamic Rendering**: Add `export const dynamic = 'force-dynamic'` to pages that need fresh data on every request (e.g., dashboard with real-time weather data) to prevent stale data after system hibernation or caching issues
-- **Dynamic Routes**: Mark dynamic API routes with `export const dynamic = 'force-dynamic'`
-- **Revalidation**: Use `revalidatePath()` for on-demand revalidation after mutations
-- **Server vs Client**: Avoid mixing server-only code with client components
-- **Async Components**: Server components can be async, client components cannot
-
-### Data Handling
-- **File System Access**: Only use `fs` in server components or API routes, never in client components
-- **Pressure Gradient Calculation**: Positive = Onshore Flow (coast > inland), Negative = Offshore Flow (inland > coast)
-- **Timezone Display**: Always format dates with user's local timezone using `toLocaleString()`
-- **Location Limits**: Maximum 25 locations, max 3 dashboard locations
-
-### API Integration
-- **NOAA Weather API**: No API key required, but must include User-Agent header; respect rate limits
-- **Data Freshness**: Most recent METAR observation is used (typically updated every hour)
-- **Error Handling**: Always handle API failures gracefully with fallbacks
-
-### TypeScript
-- **Path Alias**: Use `@/` for imports, not relative paths like `../../`
-- **Enum vs Union Types**: Prefer union types (`"coast" | "interior"`) over enums
-- **Interface vs Type**: Use interfaces for object shapes, types for unions/intersections
-
-## Branch Awareness and Context
-
-**CRITICAL**: When working on any branch other than `main`, always understand the differences between the current branch and `main` before making assumptions about shared infrastructure (Docker, CI/CD, production deployments).
-
-### Key Principles
-
-1. **Identify the current branch first.** Before making changes that affect deployment, data files, or shared infrastructure, run `git branch` or check the repository attachment to confirm which branch you are on.
-
-2. **Never assume the current branch's code runs in Docker.** Docker deployments are built from released versions on `main`. The current development branch may use entirely different APIs, schemas, data files, or dependencies than what Docker is running.
-
-3. **Main branch is the source of truth for production.** If the current branch introduces a new API (e.g., METAR replacing Open-Meteo), new schema fields (e.g., `icaoCode`), or new data files (e.g., `locations2.json`), those changes do NOT exist on `main` until merged.
-
-4. **Check main branch state when needed.** Use `git show main:<filepath>` or `git diff main -- <filepath>` to understand what the main branch contains before drawing conclusions about compatibility or breakage.
-
-5. **Data file isolation between branches.** Different branches may use different data files or schemas:
-   - `main` branch: Uses `data/locations.json` (may have a different schema than the current branch)
-   - Feature branches: May use alternate data files (e.g., `data/locations2.json`) to avoid conflicts with Docker or production
-   - The file referenced in `lib/data/locations.ts` determines which file the app reads at runtime
-
-### Common Branch-Related Mistakes to Avoid
-
-- ❌ Assuming Docker uses the same API client as the current branch
-- ❌ Flagging schema mismatches between branches as "critical issues" when they are expected divergences
-- ❌ Modifying `main`-branch data files based on current-branch requirements
-- ❌ Conflating the current branch's `Dockerfile` or `docker-compose.yml` behavior with what is actually deployed
-- ✅ Always ask: "Which branch does this infrastructure component run from?"
-- ✅ Use `git log --oneline main..HEAD` to see what has changed since branching from `main`
-
-### Branch-Specific Configuration
-
-When the project uses branch-specific configuration (e.g., different data files per branch), document the mapping clearly:
+**CRITICAL**: Docker/production deploys from `main`. Never assume current branch code runs in Docker.
 
 | Branch | Data File | API Source | Schema |
 |--------|-----------|------------|--------|
 | `main` | `data/locations.json` | Open-Meteo | No `icaoCode` field |
 | `2.0`  | `data/locations2.json` | NOAA METAR | Includes `icaoCode` field |
 
-**Update this table** whenever a new branch introduces data or API divergence.
+- Use `git show main:<filepath>` or `git diff main -- <filepath>` to check main's state
+- Use `git log --oneline main..HEAD` to see divergence
+- Schema mismatches between branches are *expected*, not bugs
+- The file referenced in `lib/data/locations.ts` determines runtime behavior
 
-## API Integration Details
+## Domain Rules
 
-### NOAA Weather API (METAR)
-```typescript
-// Endpoint: https://api.weather.gov/stations/{ICAO}/observations
-// Parameters:
-// - {ICAO}: 4-letter ICAO station code (e.g., KSNA, KLAX, KDAG)
-// - limit: Number of recent observations to fetch
-// Headers:
-// - User-Agent: Required by NOAA API
-// - Accept: application/geo+json
-// Response: Pressure in Pascals (divide by 100 for mb/hPa)
-// Validation: Pressure must be in range 950-1050 mb
+### Pressure Gradients
+
+```
+gradient = home.pressure - compare.pressure
 ```
 
-### Internal API Endpoints
+- **Positive** → Onshore flow (marine layer) | **Negative** → Offshore flow (Santa Ana winds)
 
-**GET `/api/locations`**
-- Returns all locations, home location ID, dashboard location IDs, and API refresh interval
-- No parameters required
+**Thresholds** (defined in `lib/calculations/gradient.ts` — DO NOT change without meteorological reference):
 
-**POST `/api/locations`**
-- Add new location (max 25 total)
-- Validates with Zod schema
-- Body: `{ id, name, code, icaoCode, latitude, longitude, type, elevation? }`
+| Range | Interpretation |
+|-------|---------------|
+| > +5 mb | Strong Onshore |
+| +2 to +5 | Moderate Onshore |
+| +0.5 to +2 | Weak Onshore |
+| −0.5 to +0.5 | Neutral |
+| −2 to −0.5 | Weak Offshore |
+| −5 to −2 | Moderate Offshore |
+| < −5 mb | Strong Offshore |
 
-**PATCH `/api/locations`**
-- Update home location, dashboard selections, or API refresh interval
-- Body options:
-  - `{ homeLocationId: string }`
-  - `{ dashboardLocationIds: string[] }` (max 3)
-  - `{ apiRefreshInterval: number }` (60-3600 seconds)
+### Constraints
 
-**PUT `/api/locations`**
-- Update existing location details
-- Body: Complete location object
-
-**DELETE `/api/locations?id=location-id`**
-- Remove location (cannot delete home or dashboard locations)
-
-**GET `/api/pressure?ids=sna,sba,dag`**
-- Fetch pressure data for comma-separated location IDs
-- Returns pressure, temperature, timestamp for each location
+- Max 25 locations, max 3 dashboard locations
+- Location types: `"coast"` or `"interior"`
+- Home location cannot be deleted while set as home
+- Dashboard locations auto-removed on deletion
+- API refresh: 60–3600 seconds (default 300), auto-refresh every 5 min in browser
+- No authentication, no API keys, Zod validates all inputs
 
 ## Documentation Update Policy
 
-**CRITICAL**: Whenever you implement a new feature, fix a bug, or make significant changes to the application, you MUST update the following documentation files:
+After implementing features, fixing bugs, or making significant changes, update these files:
 
-### 1. README.md
-Update the following sections as applicable:
-- **Features section**: Add new capabilities with appropriate emoji icons
-- **Technology Stack**: Update if new dependencies are added
-- **Usage section**: Document new user-facing functionality
-- **API Endpoints**: Add/update endpoint documentation for API changes
-- **Configuration section**: Document new settings or environment variables
-- **Project Structure**: Update if new files/folders are created
+1. **README.md** — User-facing: features (with emoji), usage, API endpoints, project structure, config
+2. **IMPLEMENTATION.md** — Technical: features, data layer, file structure, dependencies, known issues, metrics
+3. **CHANGELOG.md** — Add to `[Unreleased]` section using Keep a Changelog format (Added/Changed/Fixed/etc., present tense)
 
-### 2. IMPLEMENTATION.md
-Update the following sections as applicable:
-- **Key Features Implemented**: Add detailed technical descriptions
-- **Technical Implementation**: Document data layer, calculations, or component changes
-- **File Structure**: Update with new components or files
-- **Dependencies**: Add newly installed packages
-- **Working Features**: Add completed functionality to the checklist
-- **Known Issues/Limitations**: Document any new limitations or issues
-- **Project Status**: Update metrics (lines of code, last updated date)
+**Skip docs for**: minor refactoring, comment changes, variable renames, trivial CSS tweaks.
 
-### 3. CHANGELOG.md
-Update with each build or significant change:
-- **[Unreleased] section**: Add changes under appropriate categories (Added, Changed, Fixed, etc.)
-- Move items from [Unreleased] to a new version section when releasing
-- Include the date in YYYY-MM-DD format for version releases
-- Follow Keep a Changelog format with clear, concise descriptions
-
-## When to Update Documentation
-
-Update documentation for:
-- ✅ New UI features or components
-- ✅ New API endpoints or modifications to existing ones
-- ✅ New npm packages or dependencies
-- ✅ New configuration options or environment variables
-- ✅ Bug fixes that affect documented behavior
-- ✅ Performance improvements worth noting
-- ✅ New data structures or types
-- ✅ Changes to build/deployment process
-
-Do NOT update documentation for:
-- ❌ Minor code refactoring that doesn't change functionality
-- ❌ Code comments or formatting changes
-- ❌ Internal variable renames
-- ❌ Minor style/CSS adjustments
-
-## Documentation Standards
-
-### README.md Standards
-- Use clear, user-friendly language
-- Include code examples for API endpoints
-- Keep feature descriptions concise (1-2 lines)
-- Use proper markdown formatting
-- Maintain consistent emoji usage for features
-
-### IMPLEMENTATION.md Standards
-- Use technical language appropriate for developers
-- Include file paths and component names
-- Document technical decisions and architecture
-- Keep metrics accurate (lines of code, dependencies count)
-- Update "Last Updated" date to current date
-
-### CHANGELOG.md Standards
-- Follow Keep a Changelog format (Added, Changed, Deprecated, Removed, Fixed, Security)
-- Use present tense for descriptions ("Add feature" not "Added feature")
-- Group related changes together
-- Be specific and concise
-- Add entries to [Unreleased] section during development
-- Create dated version sections only when releasing
-
-## Workflow
-
-When implementing a feature:
-1. **Complete the implementation** with all code changes
-2. **Test the functionality** to ensure it works
-3. **Update README.md** with user-facing documentation
-4. **Update IMPLEMENTATION.md** with technical details
-5. **Update CHANGELOG.md** by adding changes to the [Unreleased] section
-6. **Verify documentation accuracy** by reading through changes
-7. **Commit all changes together** (code + documentation + changelog)
-
-**Note**: Version numbers are updated automatically during the release process.
-
-## Example Documentation Updates
-
-### Example 1: Adding a New Feature
-**Feature**: Debug API Output Section
-
-**README.md Update**:
-```markdown
-- 🐛 **Debug Mode**: View raw API output for all locations in Settings
-```
-
-**IMPLEMENTATION.md Update**:
-```markdown
-#### Debug Section (`/locations`)
-- View raw JSON output from NOAA METAR API
-- Displays formatted cards with pressure, temperature, timestamp
-- On-demand data fetching with refresh button
-- Shows all configured locations simultaneously
-```
-
-### Example 2: Adding a New API Endpoint
-**Feature**: PATCH endpoint for settings
-
-**README.md Update**:
-```markdown
-### PATCH /api/locations
-Update home location or dashboard location selections.
-
-**Body (Set Home):**
-```json
-{
-  "homeLocationId": "sba"
-}
-```
-```
-
-**IMPLEMENTATION.md Update**:
-```markdown
-**`/api/locations`**
-- PATCH: Update homeLocationId or dashboardLocationIds
-- Validation with Zod schema
-- Automatic cleanup (removes deleted locations from dashboard list)
-```
-
-## Domain-Specific Guidelines
-
-### Pressure Gradient Calculations
-
-**Critical Understanding**: The pressure gradient calculation has specific meteorological meaning:
-
-```typescript
-gradient = homeLocation.pressure - compareLocation.pressure
-```
-
-**Interpretation**:
-- **Positive Gradient** (+): Home pressure > Compare pressure
-  - Indicates **Onshore Flow** (typical marine layer conditions)
-  - Higher pressure at coast pushes air inland
-  - Common in normal Southern California weather
-  
-- **Negative Gradient** (-): Home pressure < Compare pressure
-  - Indicates **Offshore Flow** (Santa Ana wind conditions)
-  - Higher pressure inland pushes air toward coast
-  - Associated with dry, warm, and potentially dangerous fire weather
-
-**Gradient Thresholds** (defined in `lib/calculations/gradient.ts`):
-- Strong Onshore: > +5 mb
-- Moderate Onshore: +2 to +5 mb
-- Weak Onshore: +0.5 to +2 mb
-- Neutral: -0.5 to +0.5 mb
-- Weak Offshore: -2 to -0.5 mb
-- Moderate Offshore: -5 to -2 mb
-- Strong Offshore: < -5 mb
-
-**DO NOT change these thresholds** without consulting meteorological references, as they are based on practical observations of Southern California weather patterns.
-
-### Location Management
-
-- **Maximum 25 locations** total (configurable in code, currently 25 verified METAR stations)
-- **Maximum 3 dashboard locations** (selectable by user)
-- **Location Types**: "coast" or "interior" (affects gradient interpretation)
-- **Elevation**: Optional field in meters above sea level
-- **Home Location**: Cannot be deleted while set as home
-- **Dashboard Locations**: Automatically removed from dashboard when deleted
-
-### Data Refresh Strategy
-
-- **API Refresh Interval**: User-configurable from 60 to 3600 seconds (1-60 minutes)
-- **Default**: 300 seconds (5 minutes)
-- **Auto-Refresh**: Dashboard refreshes every 5 minutes in browser using `setInterval`
-- **Current Hour Data**: Fetches most recent hourly reading, not daily aggregates
-- **Timezone**: All timestamps converted to user's local timezone for display
-
-## Security Considerations
-
-- **No authentication** - this is a public weather tracking tool
-- **Input Validation**: All API inputs validated with Zod schemas
-- **Pressure Validation**: METAR pressure readings validated to 950-1050 mb range
-- **File System Access**: Limited to `data/locations.json` for configuration
-- **API Keys**: Not required for NOAA Weather API
-- **Rate Limiting**: None implemented - rely on NOAA's fair use policy; User-Agent header required
+**Workflow**: Implement → Test → Update all 3 docs → Commit together.
 
 ## Release Process
 
-When the user requests to "publish a release", "create a release", or similar phrases:
+When user requests a release:
 
-1. **Ask user for new version number** (e.g., "1.5.5")
-2. **Verify CHANGELOG.md** has entries in the `[Unreleased]` section or a dated version section
-3. **Create release notes** file `RELEASE_NOTES_vX.Y.Z.md` if it doesn't exist (extract from CHANGELOG.md)
-4. **Update CHANGELOG.md** - move `[Unreleased]` items to a dated version section with current date (YYYY-MM-DD format)
-5. **Update version and build date** automatically:
-   - Update `version` field in `package.json` to new version
-   - Update version number in `components/footer.tsx` (format: "Version X.Y.Z")
-   - Update build date in `components/footer.tsx` to current date (format: "Built Month Day, Year")
-6. **Commit changes** to repository (release notes, changelog, package.json, and footer.tsx)
-7. **Run automated release workflow**:
-   ```bash
-   gh workflow run release.yml
-   ```
-   Or provide instructions to run manually in GitHub Actions UI
-8. **Redeploy local Docker runtime** following steps in `.github/copilot-docker-redeploy.md`:
-   ```bash
-   docker-compose down
-   docker-compose build --no-cache
-   docker-compose up -d
-   docker logs --tail 20 socal-pressure-tracker
-   ```
+1. Ask for version number
+2. Create `RELEASE_NOTES_vX.Y.Z.md` from CHANGELOG
+3. Move `[Unreleased]` to dated version section in CHANGELOG.md
+4. Update `package.json` version, `components/footer.tsx` version + build date
+5. Commit, then `gh workflow run release.yml`
+6. Redeploy Docker per `.github/copilot-docker-redeploy.md`
 
-See `.github/prompts/release-automation.prompt.md` for detailed release automation instructions and `.github/copilot-docker-redeploy.md` for Docker deployment steps.
-
-## Reminder
-
-🚨 **NEVER mark a task as complete without updating README.md, IMPLEMENTATION.md, and CHANGELOG.md!**
-
-This ensures the documentation always reflects the current state of the application and helps other developers (and users) understand all available features.
+See `.github/prompts/release-automation.prompt.md` for full details.

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Optimize `.github/copilot-instructions.md` from ~450 lines to ~112 lines — remove duplication, consolidate repeated sections (API endpoints, gradient thresholds, location limits, branch awareness), eliminate verbose documentation examples, and flatten structure for faster agent parsing
+
 ## [2.0.0] - 2026-02-14
 
 ### Added
