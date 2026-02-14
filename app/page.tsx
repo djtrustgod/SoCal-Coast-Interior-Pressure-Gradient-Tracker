@@ -37,8 +37,10 @@ export default async function Home({
     .filter(Boolean) as Location[];
 
   // Fetch pressure data for all locations (resilient to individual failures)
+  // Always request 24 hours of history so the chart is fully seeded on first load.
   const allLocations = [homeLocation, ...compareLocations];
-  const results = await fetchMSLPForLocationsSettled(allLocations);
+  const start = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+  const results = await fetchMSLPForLocationsSettled(allLocations, { start });
 
   // Build a map of successful readings by locationId
   const readingsByLocation = new Map<string, PressureReading>();
@@ -62,7 +64,7 @@ export default async function Home({
   const fetchedIds = new Set(allLocations.map((l) => l.id));
   const remainingLocations = locations.filter((l) => !fetchedIds.has(l.id));
   if (remainingLocations.length > 0) {
-    fetchMSLPForLocationsSettled(remainingLocations)
+    fetchMSLPForLocationsSettled(remainingLocations, { start })
       .then((bgResults) => {
         const bgReadings = bgResults
           .filter((r): r is typeof r & { data: PressureReading } => r.status === "success" && !!r.data)

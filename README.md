@@ -25,6 +25,7 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 - 🕐 **Timezone-Aware Timestamps**: All timestamps automatically converted to your local timezone
 - 💾 **Persistent Storage**: JSON-based data storage for location configurations and 24-hour pressure history
 - 📦 **24-Hour Pressure History**: Persistent accumulation of hourly MSLP readings for all 25 stations, surviving server restarts
+- 🔄 **Instant 24-Hour Seeding**: NOAA API `start` parameter requests a full 24-hour observation window on every load, so charts are fully populated even on first run
 - ⏱️ **Smart Data Updates**: Data cached with configurable revalidation (default 5 minutes), shows current hour readings
 - 🛡️ **Resilient Data Fetching**: Individual station failures don't break the entire dashboard — failed stations are reported gracefully
 
@@ -84,8 +85,8 @@ The main dashboard displays:
 
 ### Interpreting Gradients
 
-- **Positive values (red/orange)**: Higher pressure inland → Offshore flow (Santa Ana wind potential)
-- **Negative values (blue/cyan)**: Higher pressure at coast → Onshore flow (typical marine layer conditions)
+- **Positive values (blue)**: Higher pressure at coast (home) → Onshore flow (typical marine layer conditions)
+- **Negative values (red/orange)**: Higher pressure inland (compare) → Offshore flow (Santa Ana wind potential)
 - **Near zero (gray)**: Neutral conditions, minimal pressure gradient
 
 ### Location Management

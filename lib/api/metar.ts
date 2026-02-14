@@ -51,13 +51,28 @@ function pascalsToMillibars(pascals: number): number {
 }
 
 /**
+ * Options for METAR observation fetching
+ */
+export interface FetchMSLPOptions {
+  /** ISO 8601 start time — requests observations from this time onward */
+  start?: string;
+}
+
+/**
  * Fetch current METAR observation data for a single location from NOAA Weather API
  */
 export async function fetchMSLPForLocation(
-  location: Location
+  location: Location,
+  options?: FetchMSLPOptions
 ): Promise<PressureReading> {
   const icao = location.icaoCode;
-  const url = `https://api.weather.gov/stations/${icao}/observations?limit=48`;
+  // When a start time is provided, use limit=500 (API max) to capture all
+  // observations in the window, even for high-frequency (5-min) reporters.
+  const limit = options?.start ? 500 : 48;
+  let url = `https://api.weather.gov/stations/${icao}/observations?limit=${limit}`;
+  if (options?.start) {
+    url += `&start=${encodeURIComponent(options.start)}`;
+  }
 
   const response = await fetch(url, {
     headers: {
@@ -226,9 +241,10 @@ export interface FetchResult {
  * Uses Promise.allSettled so a single station failure doesn't break the batch.
  */
 export async function fetchMSLPForLocations(
-  locations: Location[]
+  locations: Location[],
+  options?: FetchMSLPOptions
 ): Promise<PressureReading[]> {
-  const results = await fetchMSLPForLocationsSettled(locations);
+  const results = await fetchMSLPForLocationsSettled(locations, options);
   // Return only successful readings (backward-compatible)
   return results
     .filter((r): r is FetchResult & { data: PressureReading } => r.status === "success" && !!r.data)
@@ -240,11 +256,12 @@ export async function fetchMSLPForLocations(
  * including errors for individual stations.
  */
 export async function fetchMSLPForLocationsSettled(
-  locations: Location[]
+  locations: Location[],
+  options?: FetchMSLPOptions
 ): Promise<FetchResult[]> {
   const promises = locations.map(async (location): Promise<FetchResult> => {
     try {
-      const data = await fetchMSLPForLocation(location);
+      const data = await fetchMSLPForLocation(location, options);
       return { status: "success", data, locationId: location.id, locationName: location.name };
     } catch (error) {
       return {

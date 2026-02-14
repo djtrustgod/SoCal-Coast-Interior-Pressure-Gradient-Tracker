@@ -90,19 +90,20 @@ All planned features have been successfully implemented and the application is r
 - **Time Series Storage**: Each `PressureReading` includes optional `timeSeries` object with arrays of time/pressure/temperature data
 - **Gradient Time Series**: `PressureGradient` objects include optional `homeTimeSeries` and `compareTimeSeries` for chart rendering
 - **24-Hour Persistent History**: `data/pressure-history.json` accumulates hourly MSLP readings for all 25 stations. On each dashboard load, fresh NOAA data is merged in, entries > 24 hours are pruned, and the file is atomically written. Time series on each `PressureReading` is enriched with the full 24-hour store before chart rendering. A module-level mutex prevents concurrent write races.
+- **24-Hour API Window**: Every NOAA METAR fetch includes a `start` parameter set to 24 hours ago, with `limit=500` (API max). This guarantees full 24-hour history on first load, even for high-frequency reporters like KVGT (5-minute intervals). The merge logic de-duplicates by hour, so there is no penalty for overlapping data.
 - **Background Station Seeding**: After rendering the dashboard with home + compare locations, a fire-and-forget fetch retrieves data for all remaining stations and merges it into the history store, ensuring history is pre-built when users change dashboard selections.
 - **Runtime Data Loading**: Locations read from file system at runtime using `fs.readFile()` instead of static imports, ensuring changes are immediately reflected without rebuild
 
 #### Calculations
 - **Pressure Gradient**: Home MSLP - Comparison MSLP
 - **Interpretations**:
-  - Strong Offshore: > +5 mb (red)
-  - Moderate Offshore: +2 to +5 mb (orange)
-  - Weak Offshore: +0.5 to +2 mb (yellow)
-  - Neutral: -0.5 to +0.5 mb (gray)
-  - Weak Onshore: -2 to -0.5 mb (blue)
-  - Moderate Onshore: -5 to -2 mb (cyan)
-  - Strong Onshore: < -5 mb (indigo)
+  - Strong Onshore: > +5 mb (blue)
+  - Moderate Onshore: +2 to +5 mb (blue)
+  - Weak Onshore: +0.5 to +2 mb (muted)
+  - Neutral: -0.5 to +0.5 mb (muted)
+  - Weak Offshore: -2 to -0.5 mb (muted)
+  - Moderate Offshore: -5 to -2 mb (orange)
+  - Strong Offshore: < -5 mb (red)
 
 #### UI Components
 - Card: Location and gradient display

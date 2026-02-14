@@ -173,8 +173,8 @@ export function PressureTrendChart({
           />
           <Tooltip
             content={({ active, payload, label }) => {
-              if (!active || !payload || payload.length === 0) return null;
-              const date = new Date(label);
+              if (!active || !payload || payload.length === 0 || label == null) return null;
+              const date = new Date(label as string | number);
               const timeLabel = date.toLocaleString(undefined, {
                 month: "short",
                 day: "numeric",

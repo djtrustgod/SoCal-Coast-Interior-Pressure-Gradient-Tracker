@@ -16,6 +16,15 @@ export function Footer() {
             >
               Project GitHub
             </a>
+            <span className="hidden md:inline">•</span>
+            <a
+              href="https://www.weather.gov/lox/LAXGRDNEW"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-foreground transition-colors"
+            >
+              LAX NWS Gradients
+            </a>
           </div>
           <div className="text-center md:text-right">
             <p>

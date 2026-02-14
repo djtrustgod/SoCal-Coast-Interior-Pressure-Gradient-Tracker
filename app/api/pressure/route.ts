@@ -35,7 +35,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const results = await fetchMSLPForLocationsSettled(requestedLocations);
+    // Always request 24 hours of history for full chart seeding
+    const start = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+    const results = await fetchMSLPForLocationsSettled(requestedLocations, { start });
 
     const successData = results
       .filter((r) => r.status === "success" && r.data)
