@@ -1,59 +1,34 @@
-# Docker Redeployment Instructions
+# Docker Redeploy
 
-When the user requests "Redeploy Docker" or similar commands like "redeploy to docker", "rebuild docker", "update docker", or "docker redeploy", follow these steps:
+When user says "redeploy docker", "rebuild docker", or similar:
 
-## Standard Docker Compose Redeployment
+## Standard Redeploy
 
-Execute the following commands in sequence:
+```bash
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
+```
 
-1. **Stop and remove existing containers**:
-   ```bash
-   docker-compose down
-   ```
+## Verify
 
-2. **Rebuild image with latest code** (no cache to ensure all changes are included):
-   ```bash
-   docker-compose build --no-cache
-   ```
+```bash
+docker ps                                    # Should show "healthy"
+docker logs --tail 20 socal-pressure-tracker # Should show "✓ Ready in Xms"
+```
 
-3. **Start container in detached mode**:
-   ```bash
-   docker-compose up -d
-   ```
+App at http://localhost:3000. Data in `./data` persists across redeploys (volume mount).
 
-4. **Verify deployment**:
-   ```bash
-   docker ps
-   docker logs --tail 20 socal-pressure-tracker
-   ```
+## Quick Redeploy (code-only changes, no dependency changes)
 
-## Expected Output
-
-- `docker ps` should show the container as "healthy"
-- Logs should show "✓ Ready in Xms"
-- Application should be accessible at http://localhost:3000
-
-## Troubleshooting
-
-If the container fails to start:
-- Check logs: `docker logs socal-pressure-tracker`
-- Verify port 3000 is not in use: `netstat -ano | findstr :3000`
-- Check Docker Compose configuration: `docker-compose config`
-
-## Data Persistence
-
-The `./data` directory is mounted as a volume, so location configurations persist across redeployments.
-
-## Quick Redeploy (Alternative)
-
-For faster redeployment when only code changes (not dependencies):
 ```bash
 docker-compose down && docker-compose build && docker-compose up -d
 ```
 
-## Full Clean Rebuild
+## Full Clean Rebuild (troubleshooting only)
 
-For a complete clean rebuild (removes all cached layers):
+⚠️ Removes ALL Docker images/volumes system-wide.
+
 ```bash
 docker-compose down -v
 docker system prune -a -f
@@ -61,4 +36,8 @@ docker-compose build --no-cache
 docker-compose up -d
 ```
 
-⚠️ **Warning**: The full clean rebuild removes all Docker images and volumes. Only use when troubleshooting persistent issues.
+## Troubleshooting
+
+- **Container won't start**: `docker logs socal-pressure-tracker`
+- **Port conflict**: `netstat -ano | findstr :3000`
+- **Config check**: `docker-compose config`
