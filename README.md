@@ -50,20 +50,20 @@ A Next.js web application that tracks and displays Mean Sea Level Pressure (MSLP
 ### Installation
 
 1. Clone the repository:
-\`\`\`
+```
 git clone <https://github.com/djtrustgod/SoCal-Coast-Interior-Pressure-Gradient-Tracker.git>
 cd SoCal-Coast-Interior-Pressure-Gradient-Tracker
-\`\`\`
+```
 
 2. Install dependencies:
-\`\`\`
+```
 npm install
-\`\`\`
+```
 
 3. Run the development server:
-\`\`\`
+```
 npm run dev
-\`\`\`
+```
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
@@ -152,29 +152,29 @@ Fetch MSLP data for specified locations.
 - `ids`: Comma-separated location IDs
 
 **Example:**
-\`\`\`
+```
 GET /api/pressure?ids=sna,sba,dag
-\`\`\`
+```
 
 ### GET /api/locations
 
 Get all configured locations, home location ID, and dashboard location IDs.
 
 **Response:**
-\`\`\`json
+```json
 {
   "homeLocationId": "sna",
   "dashboardLocationIds": ["sba", "smx", "dag"],
   "locations": [...]
 }
-\`\`\`
+```
 
 ### POST /api/locations
 
 Add a new location.
 
 **Body:**
-\`\`\`json
+```json
 {
   "id": "location-id",
   "name": "Location Name",
@@ -184,32 +184,32 @@ Add a new location.
   "type": "coast" | "interior",
   "elevation": 100
 }
-\`\`\`
+```
 
 ### PATCH /api/locations
 
 Update home location, dashboard location selections, or API refresh interval.
 
 **Body (Set Home):**
-\`\`\`json
+```json
 {
   "homeLocationId": "sba"
 }
-\`\`\`
+```
 
 **Body (Set Dashboard Locations):**
-\`\`\`json
+```json
 {
   "dashboardLocationIds": ["sba", "smx", "dag"]
 }
-\`\`\`
+```
 
 **Body (Set API Refresh Interval):**
-\`\`\`json
+```json
 {
   "apiRefreshInterval": 300
 }
-\`\`\`
+```
 *Note: Value in seconds, minimum 60, maximum 3600*
 
 ### PUT /api/locations
@@ -217,7 +217,7 @@ Update home location, dashboard location selections, or API refresh interval.
 Update an existing location's details.
 
 **Body:**
-\`\`\`json
+```json
 {
   "id": "location-id",
   "name": "Updated Name",
@@ -227,7 +227,7 @@ Update an existing location's details.
   "type": "coast",
   "elevation": 100
 }
-\`\`\`
+```
 
 ### DELETE /api/locations?id=location-id
 
@@ -246,18 +246,18 @@ Delete a location (cannot delete home location or locations in dashboard).
 
 **Manual Edit:**
 Edit `data/locations.json`:
-\`\`\`json
+```json
 {
   "homeLocationId": "sna",  // Change to any location ID
   "dashboardLocationIds": ["sba", "smx", "dag"],  // Up to 3 location IDs
   "locations": [...]
 }
-\`\`\`
+```
 
 ### Adding Custom Locations
 
 Either use the UI or manually edit `data/locations.json`:
-\`\`\`json
+```json
 {
   "id": "custom-id",
   "name": "Custom Location",
@@ -267,7 +267,7 @@ Either use the UI or manually edit `data/locations.json`:
   "type": "coast",
   "elevation": 50
 }
-\`\`\`
+```
 
 ## Data Caching
 
@@ -278,10 +278,10 @@ Either use the UI or manually edit `data/locations.json`:
 
 ### Standard Build
 
-\`\`\`bash
+```bash
 npm run build
 npm run start
-\`\`\`
+```
 
 The Next.js app runs on `http://localhost:3000` by default.
 

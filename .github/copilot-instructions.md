@@ -339,11 +339,11 @@ When implementing a feature:
 Update home location or dashboard location selections.
 
 **Body (Set Home):**
-\`\`\`json
+```json
 {
   "homeLocationId": "sba"
 }
-\`\`\`
+```
 ```
 
 **IMPLEMENTATION.md Update**:

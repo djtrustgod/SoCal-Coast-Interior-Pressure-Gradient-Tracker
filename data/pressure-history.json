@@ -114,6 +114,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1018,
       "temperature": 15
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1018.3,
+      "temperature": 15
     }
   ],
   "dag": [
@@ -231,6 +236,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1017.4,
       "temperature": 9.4
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1017.1,
+      "temperature": 11.7
     }
   ],
   "las": [
@@ -465,6 +475,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1020,
       "temperature": 1.1
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1019.2,
+      "temperature": 0.6
     }
   ],
   "sba": [
@@ -582,6 +597,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1016.7,
       "temperature": 12.2
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1016.7,
+      "temperature": 11.1
     }
   ],
   "smx": [
@@ -699,6 +719,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1018.9,
       "temperature": 10
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1018.8,
+      "temperature": 9.4
     }
   ],
   "lax": [
@@ -816,6 +841,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1017.8,
       "temperature": 15.6
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1018.1,
+      "temperature": 14.4
     }
   ],
   "bur": [
@@ -933,6 +963,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1017,
       "temperature": 15
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1017.6,
+      "temperature": 13.9
     }
   ],
   "ont": [
@@ -1050,6 +1085,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1017.4,
       "temperature": 13.9
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1017.9,
+      "temperature": 12.2
     }
   ],
   "psp": [
@@ -1162,6 +1202,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1016.6,
       "temperature": 19.4
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1016.7,
+      "temperature": 18.9
     }
   ],
   "san": [
@@ -1278,6 +1323,11 @@
     {
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1018.9,
+      "temperature": 16.1
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1019.2,
       "temperature": 16.1
     }
   ],
@@ -1396,6 +1446,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1018,
       "temperature": 13.9
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1018.3,
+      "temperature": 13.9
     }
   ],
   "smo": [
@@ -1513,6 +1568,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1017.8,
       "temperature": 13.9
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1018.2,
+      "temperature": 12.8
     }
   ],
   "vny": [
@@ -1624,7 +1684,12 @@
     {
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1017.1,
-      "temperature": 14.4
+      "temperature": 12.8
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1017.4,
+      "temperature": 12.8
     }
   ],
   "oxr": [
@@ -1742,6 +1807,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1017,
       "temperature": 13.3
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1017.2,
+      "temperature": 12.2
     }
   ],
   "bfl": [
@@ -1859,6 +1929,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1019.5,
       "temperature": 11.7
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1019.6,
+      "temperature": 9.4
     }
   ],
   "sbp": [
@@ -1966,6 +2041,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1018.7,
       "temperature": 12.2
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1018.3,
+      "temperature": 9.4
     }
   ],
   "vis": [
@@ -2083,6 +2163,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1020.2,
       "temperature": 10
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1020.2,
+      "temperature": 9.4
     }
   ],
   "trm": [
@@ -2184,7 +2269,12 @@
     {
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1015.4,
-      "temperature": 15
+      "temperature": 16.7
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1015.8,
+      "temperature": 16.7
     }
   ],
   "sbd": [
@@ -2424,6 +2514,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1020.2,
       "temperature": 2.8
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1020.2,
+      "temperature": 2.2
     }
   ]
 }

@@ -1,3 +1,28 @@
+"use client";
+
+import { useEffect, useState } from "react";
+
+function ZuluClock() {
+  const [time, setTime] = useState("");
+
+  useEffect(() => {
+    function update() {
+      const now = new Date();
+      const mm = String(now.getUTCMonth() + 1).padStart(2, "0");
+      const dd = String(now.getUTCDate()).padStart(2, "0");
+      setTime(
+        `${mm}/${dd} ${now.toISOString().slice(11, 16)}Z`
+      );
+    }
+    update();
+    const id = setInterval(update, 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  if (!time) return null;
+  return <span className="font-mono">{time}</span>;
+}
+
 export function Footer() {
   return (
     <footer className="border-t mt-auto">
@@ -25,6 +50,8 @@ export function Footer() {
             >
               LAX NWS Gradients
             </a>
+            <span className="hidden md:inline">•</span>
+            <ZuluClock />
           </div>
           <div className="text-center md:text-right">
             <p>
