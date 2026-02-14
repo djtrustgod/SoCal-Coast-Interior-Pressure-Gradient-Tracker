@@ -358,6 +358,11 @@
       "timestamp": "2026-02-14T05:00:00.000Z",
       "pressure": 1017.6,
       "temperature": 14.4
+    },
+    {
+      "timestamp": "2026-02-14T06:00:00.000Z",
+      "pressure": 1017.9,
+      "temperature": 15
     }
   ],
   "tph": [
@@ -2395,8 +2400,8 @@
     },
     {
       "timestamp": "2026-02-14T06:00:00.000Z",
-      "pressure": 1018.6,
-      "temperature": 12
+      "pressure": 1019,
+      "temperature": 11
     }
   ],
   "slc": [
