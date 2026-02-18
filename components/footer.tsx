@@ -29,9 +29,9 @@ export function Footer() {
       <div className="container mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex flex-col md:flex-row items-center gap-2 md:gap-4">
-            <span className="font-semibold">Version 2.0.0</span>
+            <span className="font-semibold">Version 2.0.1</span>
             <span className="hidden md:inline">•</span>
-            <span>Built February 14, 2026</span>
+            <span>Built February 17, 2026</span>
             <span className="hidden md:inline">•</span>
             <a
               href="https://github.com/djtrustgod/SoCal-Coast-Interior-Pressure-Gradient-Tracker"

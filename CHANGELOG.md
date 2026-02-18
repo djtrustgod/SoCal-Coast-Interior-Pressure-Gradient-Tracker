@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.1] - 2026-02-17
+
+### Fixed
+
+- Replace static full-screen error when NOAA METAR API is unavailable with auto-retry component that counts down and retries automatically (15s initial, exponential backoff up to 2min), with manual "Retry Now" button
+
 ### Changed
 
 - Optimize `.github/copilot-instructions.md` from ~450 lines to ~112 lines — remove duplication, consolidate repeated sections (API endpoints, gradient thresholds, location limits, branch awareness), eliminate verbose documentation examples, and flatten structure for faster agent parsing

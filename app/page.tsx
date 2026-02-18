@@ -4,6 +4,7 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { LocationSelector } from "@/components/location-selector";
 import { DashboardContent } from "@/components/dashboard-content";
+import { ErrorRetry } from "@/components/error-retry";
 import { readLocationsFile } from "@/lib/data/locations";
 import {
   persistReadings,
@@ -110,14 +111,7 @@ export default async function Home({
             failedStations={failedStations}
           />
         ) : (
-          <div className="text-center py-12">
-            <p className="text-destructive text-lg font-semibold">
-              Unable to fetch pressure data for home location ({homeLocation.name}).
-            </p>
-            <p className="text-muted-foreground mt-2">
-              The NOAA METAR API may be temporarily unavailable. Please try refreshing.
-            </p>
-          </div>
+          <ErrorRetry locationName={homeLocation.name} />
         )}
       </main>
       <Footer />
