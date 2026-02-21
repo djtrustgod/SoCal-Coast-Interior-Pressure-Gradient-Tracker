@@ -56,16 +56,6 @@ Next.js 16 (App Router, Turbopack) · TypeScript strict · Tailwind CSS + shadcn
 
 All API responses use `{ success, data }` / `{ error }` shape.
 
-## Branch Awareness
-
-**CRITICAL**: Two branches with different data sources and schemas.
-
-| Branch | Data File | API Source | Schema Difference |
-|--------|-----------|------------|-------------------|
-| `main` | `data/locations.json` | Open-Meteo | No `icaoCode` field |
-| `2.0` | `data/locations2.json` | NOAA METAR | Has `icaoCode` field |
-
-Schema mismatches between branches are expected. Use `git show main:<path>` to inspect main branch files. `lib/data/locations.ts` determines which data file is used at runtime.
 
 ## Domain: Pressure Gradients
 

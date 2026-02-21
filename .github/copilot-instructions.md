@@ -39,17 +39,6 @@ npx tsc --noEmit  # Type check
 - **NOAA API**: No key needed, User-Agent required. Pressure in Pascals (÷100 → mb). Validate 950–1050 mb. Use `Promise.allSettled` — one station failure must not break the batch.
 - **Data**: Local timezone via `toLocaleString()`. Most recent METAR used (hourly). 24h history via `start` param.
 
-## Branch Awareness
-
-**CRITICAL**: Docker/production deploys from `main`. Never assume current branch runs in Docker.
-
-| Branch | Data File | API | Schema |
-|--------|-----------|-----|--------|
-| `main` | `data/locations.json` | Open-Meteo | No `icaoCode` |
-| `2.0` | `data/locations2.json` | NOAA METAR | Has `icaoCode` |
-
-Schema mismatches between branches are expected. Use `git show main:<path>` or `git diff main -- <path>` to inspect main. `lib/data/locations.ts` determines runtime behavior.
-
 ## Domain: Pressure Gradients
 
 `gradient = home.pressure - compare.pressure`
