@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.0.2] - 2026-03-21
+
+### Added
+
+- `predev` npm script that automatically purges `.next/dev/cache/fetch-cache` before each dev server start to prevent disk bloat
+- `clean:cache` npm script for on-demand dev fetch cache purging
+
 ## [2.0.1] - 2026-02-17
 
 ### Fixed

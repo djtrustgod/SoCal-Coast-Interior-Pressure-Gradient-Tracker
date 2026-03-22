@@ -374,5 +374,5 @@ The application is ready for:
 **Build Time**: Initial ~15 minutes + Enhancements ~3 hours
 **Lines of Code**: ~3,700+
 **Technologies**: Next.js 16.0.7 (Turbopack), React 19, TypeScript, Tailwind CSS, shadcn/ui, NOAA Weather API (METAR), Docker
-**Version**: 1.5.4
-**Last Updated**: February 11, 2026
+**Version**: 2.0.2
+**Last Updated**: March 21, 2026

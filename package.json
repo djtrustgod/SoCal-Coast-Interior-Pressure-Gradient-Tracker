@@ -1,13 +1,15 @@
 {
   "name": "socal-coast-interior-pressure-gradient-tracker",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "predev": "node -e \"const fs=require('fs'),p='.next/dev/cache/fetch-cache';if(fs.existsSync(p)){fs.rmSync(p,{recursive:true,force:true});console.log('Purged fetch cache')}\"",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean:cache": "node -e \"const fs=require('fs'),p='.next/dev/cache/fetch-cache';if(fs.existsSync(p)){fs.rmSync(p,{recursive:true,force:true});console.log('Purged fetch cache')}else{console.log('No fetch cache found')}\""
   },
   "repository": {
     "type": "git",
