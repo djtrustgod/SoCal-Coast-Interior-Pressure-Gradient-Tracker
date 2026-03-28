@@ -34,7 +34,7 @@ export async function fetchMSLPForLocation(
   url.searchParams.append("timezone", "America/Los_Angeles");
 
   const response = await fetch(url.toString(), {
-    next: { revalidate: 300 }, // 5 minutes default
+    cache: 'no-store',
   });
 
   if (!response.ok) {
@@ -107,7 +107,7 @@ export async function fetchHistoricalMSLP(
   url.searchParams.append("timezone", "America/Los_Angeles");
 
   const response = await fetch(url.toString(), {
-    next: { revalidate: 86400 }, // Cache for 24 hours
+    cache: 'no-store',
   });
 
   if (!response.ok) {

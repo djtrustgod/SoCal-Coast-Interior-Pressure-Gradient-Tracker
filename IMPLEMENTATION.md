@@ -277,7 +277,7 @@ All planned features have been successfully implemented and the application is r
 ## Performance Metrics
 
 - **Initial Load**: Fast (server-side rendering)
-- **Data Cache**: Configurable revalidation (default 5 minutes, adjustable 1-60 minutes)
+- **Data Cache**: All API fetch calls use `cache: 'no-store'` (live weather data, always fresh). `predev` script clears any legacy `.next/dev/cache/fetch-cache` on startup
 - **Auto-Refresh**: Client-side refresh every 5 minutes (300000ms)
 - **Bundle Size**: Optimized with Next.js and Turbopack
 - **API Calls**: Minimized with user-configurable caching

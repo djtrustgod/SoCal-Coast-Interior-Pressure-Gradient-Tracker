@@ -79,7 +79,7 @@ export async function fetchMSLPForLocation(
       "User-Agent": NOAA_USER_AGENT,
       Accept: "application/geo+json",
     },
-    next: { revalidate: 300 },
+    cache: 'no-store',
   });
 
   if (!response.ok) {
