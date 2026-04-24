@@ -338,6 +338,14 @@ The application is ready for:
 - Resource limits (512MB memory, 1 CPU)
 - Log rotation (10MB max, 3 files)
 
+## Developer Tooling
+
+The `tools/` directory holds Windows-specific, out-of-build helpers that are not part of the Next.js runtime:
+
+- `server-gui.ps1` / `server-gui.bat` — WinForms launcher that starts/stops `npm run dev` or `npm run start` and streams server output to a GUI log pane. The child is spawned as `cmd /c npm run ... > %TEMP%\socal-pressure-server.log 2>&1`, so the server writes to a real file instead of a PowerShell-owned pipe. The GUI tails that file on a 300ms `System.Windows.Forms.Timer` — decoupling display from lifetime, so the server keeps running even if the GUI window is closed or crashes. Unhandled exceptions are caught via `Application.ThreadException`, `AppDomain.UnhandledException`, and a top-level `try`/`catch` around `ShowDialog()`, all routed to `%TEMP%\socal-pressure-gui-crash.log`. Stop uses `taskkill /PID <pid> /T /F` to tree-kill npm + its child `node` process.
+- `create-shortcut.ps1` — generates a Desktop `.lnk` that targets `powershell.exe` with `-STA -File server-gui.ps1`. Windows 11 only pins `.exe`-targeted shortcuts, so targeting `powershell.exe` (rather than the `.bat`) is what makes it pinnable. Sets `IconLocation` to `public/favicon.ico`.
+- `make-icon.js` — rasterizes `tools/icon-source.svg` at six sizes using `sharp` (transitive dep of Next.js) and hand-assembles a multi-size ICO (6-byte ICONDIR + 16-byte ICONDIRENTRY per size + concatenated PNG blobs, since ICO supports PNG entries since Vista). `icon-source.svg` is Twemoji's path-based color SVG of 🍃 (CC-BY 4.0) — the project's emoji-based `public/favicon.svg` depends on system emoji fonts to render in color, which librsvg and WPF's text stack don't support, so a path-based source is needed for server-side rasterization.
+
 ## Success Criteria Met
 
 ✅ React + Next.js web application (Next.js 16.0.7 with Turbopack)

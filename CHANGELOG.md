@@ -7,9 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Windows GUI launcher under `tools/` — `server-gui.ps1` + `server-gui.bat` open a small WinForms window to start/stop the Next.js dev or prod server with live log streaming, "Open in Browser" button, and a production-build-missing check that prompts to run `npm run build` first
+- `tools/create-shortcut.ps1` to create a pinnable Desktop shortcut that launches the GUI (targets `powershell.exe` so Windows 11 allows pinning to the taskbar)
+- `tools/make-icon.js` that rasterizes `tools/icon-source.svg` (Twemoji 🍃, CC-BY 4.0) into a multi-size `public/favicon.ico` (16/32/48/64/128/256) used as the shortcut icon — librsvg/WPF can't render color-emoji fonts, so the Twemoji path-based SVG is rasterized via `sharp` (existing transitive dep) instead
+- `public/favicon.ico` checked in for Windows and legacy-browser favicon support
+
 ### Fixed
 
 - Switch all API fetch calls from `next: { revalidate }` to `cache: 'no-store'` to prevent `.next/dev/cache/fetch-cache` from growing unbounded (48 GB+) during long dev server sessions
+- Windows GUI launcher now writes the server's stdout/stderr to a log file (`%TEMP%\socal-pressure-server.log`) via `cmd`-level redirection rather than a PowerShell pipe — prevents Next.js from blocking on `console.log()` if the GUI window ever closes unexpectedly. GUI tails the file on a timer for live display, and writes any unhandled exception to `%TEMP%\socal-pressure-gui-crash.log` for post-mortem.
 
 ## [2.0.2] - 2026-03-21
 
