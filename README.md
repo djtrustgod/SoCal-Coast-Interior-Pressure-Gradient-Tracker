@@ -67,6 +67,16 @@ npm run dev
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+### Windows GUI Launcher (Optional)
+
+For one-click start/stop without a terminal, a small WinForms launcher lives under `tools/`:
+
+- **Launch directly**: double-click `tools/server-gui.bat` — opens a window with Start / Stop / Open-in-Browser buttons, Dev/Prod toggle, and a live log pane.
+- **Pin to taskbar**: run `powershell -ExecutionPolicy Bypass -File tools/create-shortcut.ps1` to create a Desktop shortcut, then right-click the shortcut → *Show more options* → *Pin to taskbar*. The shortcut uses the app's leaf icon.
+- **Regenerate the icon** (`public/favicon.ico`): `node tools/make-icon.js` — rasterizes `tools/icon-source.svg` (Twemoji 🍃, CC-BY 4.0) at 16/32/48/64/128/256 into a multi-size `.ico`.
+
+The launcher writes the server's stdout/stderr to `%TEMP%\socal-pressure-server.log` (not through a PowerShell pipe), so the server never blocks if the GUI window is closed. If the GUI ever crashes, check `%TEMP%\socal-pressure-gui-crash.log`.
+
 ## Usage
 
 ### Dashboard
