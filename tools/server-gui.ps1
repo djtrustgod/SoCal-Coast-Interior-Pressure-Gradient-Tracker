@@ -16,6 +16,7 @@ $CrashLogPath  = Join-Path $env:TEMP 'socal-pressure-gui-crash.log'
 $script:Proc = $null
 $script:State = 'Stopped'  # Stopped | Starting | Running | Stopping | Error
 $script:LogPos = 0         # byte offset into $ServerLogPath we've consumed
+$script:AdoptedPid = $null # PID of an externally-started server we attached to
 
 # ---------- crash logging ----------
 # If the GUI dies from an unhandled exception, leave a breadcrumb so we can
@@ -249,21 +250,63 @@ function Read-LogTail {
     }
 }
 
+function Find-ServerOnPort([int]$port = 3000) {
+    try {
+        $conn = Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction Stop |
+                Select-Object -First 1
+        if ($null -eq $conn) { return $null }
+        return [int]$conn.OwningProcess
+    } catch { return $null }
+}
+
+function Test-ServerResponsive([string]$url = $AppUrl, [int]$timeoutSec = 2) {
+    try {
+        [void](Invoke-WebRequest -Uri $url -TimeoutSec $timeoutSec -UseBasicParsing -Method Head)
+        return $true
+    } catch { return $false }
+}
+
 function Stop-ServerProcess {
-    if ($null -eq $script:Proc) { return }
+    $pidToKill = $null
+    $isAdopted = $false
+    if ($null -ne $script:Proc) {
+        $pidToKill = $script:Proc.Id
+    } elseif ($null -ne $script:AdoptedPid) {
+        $pidToKill = $script:AdoptedPid
+        $isAdopted = $true
+    }
+    if ($null -eq $pidToKill) { return }
+
     Set-State 'Stopping'
-    $pidToKill = $script:Proc.Id
     try {
         # Tree-kill: npm spawns node; plain Stop-Process leaves the child running.
         Start-Process -FilePath 'taskkill.exe' -ArgumentList "/PID $pidToKill /T /F" -WindowStyle Hidden -Wait
     } catch {
         Append-Log "[stop error: $($_.Exception.Message)]"
     }
+
+    # Adopted procs have no Exited handler, so finalize state ourselves.
+    if ($isAdopted) {
+        $script:AdoptedPid = $null
+        Append-Log '[adopted server stopped]'
+        Set-State 'Stopped'
+    }
 }
 
 # ---------- event wiring ----------
 $startBtn.Add_Click({
     if ($script:State -eq 'Running' -or $script:State -eq 'Starting') { return }
+
+    # Race guard: between launcher startup and this click, something else
+    # may have bound port 3000. Adopt instead of failing with EADDRINUSE.
+    $existingPid = Find-ServerOnPort 3000
+    if ($existingPid) {
+        $procName = try { (Get-Process -Id $existingPid -ErrorAction Stop).ProcessName } catch { 'unknown' }
+        Append-Log "[port 3000 already in use by PID $existingPid ($procName) - adopting]"
+        $script:AdoptedPid = $existingPid
+        Set-State 'Running'
+        return
+    }
 
     $mode = if ($devRadio.Checked) { 'dev' } else { 'prod' }
 
@@ -348,6 +391,19 @@ Set-State 'Stopped'
 Append-Log "[repo: $RepoRoot]"
 Append-Log "[server log: $ServerLogPath]"
 Append-Log "[crash log if GUI fails: $CrashLogPath]"
+
+# Adopt an already-running server if port 3000 is bound and answering HTTP.
+# This handles the case where a previous launcher session was closed while
+# the server was kept running.
+$existingPid = Find-ServerOnPort 3000
+if ($existingPid -and (Test-ServerResponsive)) {
+    $procName = try { (Get-Process -Id $existingPid -ErrorAction Stop).ProcessName } catch { 'unknown' }
+    $script:AdoptedPid = $existingPid
+    Append-Log "[adopted existing server: PID $existingPid ($procName) on port 3000]"
+    Append-Log "[Stop will terminate this process; logs from prior session are not available]"
+    Set-State 'Running'
+}
+
 try {
     [void]$form.ShowDialog()
 } catch {

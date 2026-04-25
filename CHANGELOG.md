@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Switch all API fetch calls from `next: { revalidate }` to `cache: 'no-store'` to prevent `.next/dev/cache/fetch-cache` from growing unbounded (48 GB+) during long dev server sessions
 - Windows GUI launcher now writes the server's stdout/stderr to a log file (`%TEMP%\socal-pressure-server.log`) via `cmd`-level redirection rather than a PowerShell pipe — prevents Next.js from blocking on `console.log()` if the GUI window ever closes unexpectedly. GUI tails the file on a timer for live display, and writes any unhandled exception to `%TEMP%\socal-pressure-gui-crash.log` for post-mortem.
+- Windows GUI launcher now detects an already-running server on port 3000 at startup (and as a race-guard inside the Start handler) and adopts it instead of failing with `EADDRINUSE`. The Stop button activates for adopted servers and tree-kills them via `taskkill /T /F`. Closing the launcher leaves an adopted server running — only servers the GUI itself spawned are stopped on close.
 
 ## [2.0.2] - 2026-03-21
 

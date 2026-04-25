@@ -77,6 +77,8 @@ For one-click start/stop without a terminal, a small WinForms launcher lives und
 
 The launcher writes the server's stdout/stderr to `%TEMP%\socal-pressure-server.log` (not through a PowerShell pipe), so the server never blocks if the GUI window is closed. If the GUI ever crashes, check `%TEMP%\socal-pressure-gui-crash.log`.
 
+If you close the launcher while the server is still running and reopen it later, the new launcher window detects the existing process on port 3000, attaches to it, and lights up the Stop button so you can shut it down from the GUI. Closing the launcher window will not stop a server it didn't start.
+
 ## Usage
 
 ### Dashboard
