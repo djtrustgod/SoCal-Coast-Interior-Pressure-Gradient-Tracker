@@ -79,3 +79,6 @@ Desktop.ini
 *.temp
 .cache
 next-env.d.ts
+
+# Runtime data (auto-generated, not for version control)
+data/pressure-history.json
